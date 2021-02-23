@@ -7,11 +7,15 @@ public final class OofTracker extends JavaPlugin implements Listener {
 
     private static OofTracker oofTracker = null;
 
+    private DamageProcessor damageProcessor;
+
     @Override
     public void onEnable() {
 
         try {
             oofTracker = this;
+
+            this.damageProcessor = new DamageProcessor();
             this.getServer().getPluginManager().registerEvents(this, this);
 
         } catch (Exception err){
@@ -22,4 +26,5 @@ public final class OofTracker extends JavaPlugin implements Listener {
     }
 
     public static OofTracker get() { return oofTracker; }
+    public static DamageProcessor getDamageProcessor() { return get().damageProcessor; }
 }
