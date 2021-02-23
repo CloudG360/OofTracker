@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+}
+
+task copyJars(type: Copy) {
+    from subprojects.collect { it.tasks.withType(Jar) }
+    into "$buildDir/libs"
+}
+
+jar {
+    jar.enabled(false) // Because I'm too monkeybrain to remove the random root jar (empty too ffs), disable it instead pog.
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        //Remote dependencies.
+
+        //Single jars
+        compile fileTree(dir: rootDir.getPath() + '/libs/compile', include: '*.jar')
+        implementation fileTree(dir: rootDir.getPath() + '/libs/runtime', include: '*.jar')
+    }
+
+    jar {
+        from {
+            configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        }
+    }
+}
