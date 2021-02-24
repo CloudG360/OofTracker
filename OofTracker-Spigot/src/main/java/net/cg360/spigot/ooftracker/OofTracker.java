@@ -11,7 +11,7 @@ public final class OofTracker extends JavaPlugin implements Listener {
     private static OofTracker oofTracker = null;
 
     private DamageListManager damageListManager;
-    private DamageListener damageListener;
+    private DamageProcessing damageProcessing;
 
     @Override
     public void onEnable() {
@@ -20,11 +20,11 @@ public final class OofTracker extends JavaPlugin implements Listener {
             oofTracker = this;
 
             this.damageListManager = new DamageListManager();
-            this.damageListener = new DamageListener();
+            this.damageProcessing = new DamageProcessing();
 
             this.damageListManager.setAsPrimaryManager();
 
-            this.getServer().getPluginManager().registerEvents(damageListener, this);
+            this.getServer().getPluginManager().registerEvents(damageProcessing, this);
 
         } catch (Exception err){
             oofTracker = null;
@@ -36,6 +36,6 @@ public final class OofTracker extends JavaPlugin implements Listener {
     public static OofTracker get() { return oofTracker; }
 
     public static Logger getLog() { return get().getLogger(); }
-    public static DamageListener getDamageListener() { return get().damageListener; }
+    public static DamageProcessing getDamageListener() { return get().damageProcessing; }
     public static DamageListManager getDamageListManager() { return get().damageListManager; }
 }
