@@ -1,6 +1,7 @@
 package net.cg360.spigot.ooftracker.lists;
 
 import net.cg360.nsapi.commons.Check;
+import net.cg360.spigot.ooftracker.OofTracker;
 import net.cg360.spigot.ooftracker.causes.DamageTrace;
 
 import java.util.LinkedList;
@@ -22,6 +23,7 @@ public class DamageList {
     public void push(DamageTrace trace) {
         if(!trace.getVictim().getUniqueId().equals(owner)) throw new IllegalArgumentException("DamageTrace being pushed must belong to the list's owner.");
         stack.add(0, trace);
+        OofTracker.getLog().fine(trace.toString());
     }
 
     /**

@@ -114,4 +114,16 @@ public abstract class DamageTrace {
 
     /** @return the vanilla cause of the damage. */
     public EntityDamageEvent.DamageCause getVanillaCause() { return vanillaCause; }
+
+    @Override
+    public String toString() {
+        return "DamageTrace{" +
+                "time=" + time +
+                ", victim=" + victim +
+                ", originalDamageDealt=" + originalDamageDealt +
+                ", finalDamageDealt=" + finalDamageDealt +
+                ", vanillaCause=" + vanillaCause +
+                ", type = " + getTraceType() +
+                '}';
+    }
 }
