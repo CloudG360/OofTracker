@@ -1,7 +1,9 @@
 name: OofTracker
-version: @version@
+version: 1.0.0
 main: net.cg360.spigot.ooftracker.OofTracker
 api-version: 1.16
 prefix: ooftrack
 authors: [ CG360 ]
 description: Tracks player damage + deaths to add support for kill assists
+
+depend: [ "NSAPICommons" ]
