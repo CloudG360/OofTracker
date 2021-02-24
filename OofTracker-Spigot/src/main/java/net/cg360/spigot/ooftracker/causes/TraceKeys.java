@@ -1,7 +1,6 @@
 package net.cg360.spigot.ooftracker.causes;
 
 import net.cg360.nsapi.commons.data.keyvalue.Key;
-import net.cg360.nsapi.commons.id.Identifier;
 import net.cg360.nsapi.commons.id.Namespace;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.EntityDamageEvent;
