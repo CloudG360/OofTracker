@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,24 +21,13 @@ public class DamageProcessing implements Listener {
     protected List<UUID> ignoredEvents; // Used to block events caused by custom damage.
     protected List<DamageProcessor> damageProcessors;
 
-    @EventHandler
-    public void onEntityDamage(EntityDamageEvent event) {
 
-        if(!ignoredEvents.remove(event.getEntity().getUniqueId())) { // If an item gets removed (thus, it existed)
-
-            for (DamageProcessor processor : damageProcessors) {
-                Optional<DamageTrace> trace = processor.getDamageTrace(event);
-
-                if(trace.isPresent()) {
-                    pushTrace(event.getEntity(), trace.get());
-                    return;
-                }
-            }
-
-            // Panic! The default DamageTrace generator should've been last.
-            throw new IllegalStateException("Default DamageProcessor didn't kick in. Why's it broke? :<");
-        }
+    public DamageProcessing() {
+        this.ignoredEvents = new ArrayList<>();
+        this.damageProcessors = new ArrayList<>();
     }
+
+
 
     /**
      * Applies custom damage to an entity, thus skipping the
@@ -73,6 +63,45 @@ public class DamageProcessing implements Listener {
 
         return false;
     }
+
+
+    public void addDamageProcessor(DamageProcessor processor) {
+        Check.nullParam(processor, "Damage Processor");
+
+        int priority = processor.getPriority();
+        for(int i = 0; i < damageProcessors.size(); i++) {
+            DamageProcessor originalProcessor = damageProcessors.get(i);
+
+            if(originalProcessor.getPriority() < priority) {
+                damageProcessors.add(i, processor);
+                return;
+            }
+        }
+        damageProcessors.add(processor); // Add if not already added.
+    }
+
+
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event) {
+
+        if(!ignoredEvents.remove(event.getEntity().getUniqueId())) { // If an item gets removed (thus, it existed)
+
+            for (DamageProcessor processor : damageProcessors) {
+                Optional<DamageTrace> trace = processor.getDamageTrace(event);
+
+                if(trace.isPresent()) {
+                    pushTrace(event.getEntity(), trace.get());
+                    return;
+                }
+            }
+
+            // Panic! The default DamageTrace generator should've been last.
+            throw new IllegalStateException("Default DamageProcessor didn't kick in. Why's it broke? :<");
+        }
+    }
+
+
 
     private static void pushTrace(Entity entity, DamageTrace t) {
         DamageList ls = OofTracker.getDamageListManager().getDamageList(entity);

@@ -1,6 +1,7 @@
 package net.cg360.spigot.ooftracker;
 
 import net.cg360.spigot.ooftracker.lists.DamageListManager;
+import net.cg360.spigot.ooftracker.processors.DamageProcessing;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
