@@ -1,7 +1,9 @@
 package net.cg360.spigot.ooftracker.causes;
 
+import net.cg360.nsapi.commons.Check;
 import net.cg360.nsapi.commons.data.Settings;
 import net.cg360.nsapi.commons.id.Identifier;
+import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.EntityDamageEvent;
 
@@ -16,13 +18,10 @@ public abstract class DamageTrace {
     protected double finalDamageDealt;
     protected EntityDamageEvent.DamageCause vanillaCause;
 
+    // -- Process raw event --
+    // Used in DamageProcessor, should handle the case of a raw event.
     public DamageTrace(EntityDamageEvent eventIn) {
-        this.rawData = new Settings();
-
-        // Time probably shouldn't be changed else
-        // the stack will be wonky.
-        // Only change it if you're copying another damage trace maybe?
-        this.time = System.currentTimeMillis();
+        this.init();
 
         this.victim = eventIn.getEntity();
         this.originalDamageDealt = eventIn.getDamage();
@@ -30,14 +29,44 @@ public abstract class DamageTrace {
         this.vanillaCause = eventIn.getCause();
 
 
-        this.rawData.set(TraceKeys.TIME, this.time);
 
         this.rawData.set(TraceKeys.VICTIM, this.victim);
         this.rawData.set(TraceKeys.ORIGINAL_DAMAGE, this.originalDamageDealt);
         this.rawData.set(TraceKeys.FINAL_DAMAGE, this.finalDamageDealt);
         this.rawData.set(TraceKeys.VANILLA_CAUSE, this.vanillaCause);
-
     }
+
+    // -- Process custom damage --
+    // Triggered through the API, should allow for direct creation.
+    public DamageTrace(Damageable victim, double damageDealt) {
+        Check.nullParam(victim, "Victim");
+        if (damageDealt <= 0) throw new IllegalArgumentException("Damage Dealt should be greater than 0.");
+
+        this.init();
+
+        this.victim = victim;
+        this.originalDamageDealt = damageDealt;
+        this.finalDamageDealt = damageDealt;
+        this.vanillaCause = EntityDamageEvent.DamageCause.CUSTOM;
+
+        this.rawData.set(TraceKeys.VICTIM, this.victim);
+        this.rawData.set(TraceKeys.ORIGINAL_DAMAGE, this.originalDamageDealt);
+        this.rawData.set(TraceKeys.FINAL_DAMAGE, this.finalDamageDealt);
+        this.rawData.set(TraceKeys.VANILLA_CAUSE, this.vanillaCause);
+    }
+
+    /** Initializes the shared components of the DamageTrace. */
+    protected final void init() {
+        this.rawData = new Settings();
+
+        // Time probably shouldn't be changed else
+        // the stack will be wonky.
+        // Only change it if you're copying another damage trace maybe?
+        this.time = System.currentTimeMillis();
+        this.rawData.set(TraceKeys.TIME, this.time);
+    }
+
+
 
     /**
      * Sets the final damage applied, overriding all modifiers
