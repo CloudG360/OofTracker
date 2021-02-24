@@ -17,4 +17,6 @@ public class TraceKeys {
     public static final Key<Double> FINAL_DAMAGE = new Key<>(NAME.id("final_damage"));
     public static final Key<EntityDamageEvent.DamageCause> VANILLA_CAUSE = new Key<>(NAME.id("vanilla_cause"));
 
+    public static final Key<Entity> ATTACKER_ENTITY = new Key<>(NAME.id("attacker"));
+
 }
