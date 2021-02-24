@@ -2,17 +2,16 @@ package net.cg360.spigot.ooftracker.lists;
 
 import net.cg360.nsapi.commons.Check;
 import net.cg360.spigot.ooftracker.causes.DamageTrace;
-import org.bukkit.entity.Entity;
 
 import java.util.LinkedList;
-import java.util.List;
+import java.util.UUID;
 
-public final class DamageList {
+public class DamageList {
 
-    protected Entity owner;
+    protected UUID owner;
     protected LinkedList<DamageTrace> stack;
 
-    public DamageList(Entity owner) {
+    public DamageList(UUID owner) {
         Check.nullParam(owner, "Owner");
         this.owner = owner;
         this.stack = new LinkedList<>();
@@ -21,7 +20,7 @@ public final class DamageList {
 
     /** Adds a DamageTrace to the top of the DamageList stack. */
     public void push(DamageTrace trace) {
-        if(!trace.getVictim().getUniqueId().equals(owner.getUniqueId())) throw new IllegalArgumentException("DamageTrace being pushed must belong to the list's owner.");
+        if(!trace.getVictim().getUniqueId().equals(owner)) throw new IllegalArgumentException("DamageTrace being pushed must belong to the list's owner.");
         stack.add(0, trace);
     }
 
@@ -54,6 +53,6 @@ public final class DamageList {
     /** @return true if the list is empty. */
     public boolean isEmpty() { return this.stack.size() == 0; }
 
-    /** @return the owning entity of this DamageList. */
-    public Entity getOwner() { return owner; }
+    /** @return the owning entity id of this DamageList. */
+    public UUID getOwner() { return owner; }
 }
