@@ -2,6 +2,7 @@ package net.cg360.spigot.ooftracker;
 
 import net.cg360.spigot.ooftracker.lists.DamageListManager;
 import net.cg360.spigot.ooftracker.processors.DamageProcessing;
+import net.cg360.spigot.ooftracker.processors.builtin.DPDefault;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -20,11 +21,18 @@ public final class OofTracker extends JavaPlugin implements Listener {
         try {
             oofTracker = this;
 
+            // -- Set Managers --
             this.damageListManager = new DamageListManager();
             this.damageProcessing = new DamageProcessing();
 
             this.damageListManager.setAsPrimaryManager();
 
+
+            // -- Register DamageProcessors --
+            this.damageProcessing.addDamageProcessor(new DPDefault());
+
+
+            // -- Register DamageProcessing as Listener --
             this.getServer().getPluginManager().registerEvents(damageProcessing, this);
 
         } catch (Exception err){
