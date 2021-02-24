@@ -11,6 +11,7 @@ The Damage Lists are populated with **Damage Traces** which are accessible in th
 
 - [ ] Extra Death Messages (Assits, variety, etc)
   - [ ] Configurable?
-- [ ] Instant Respawning
+- [ ] Instant Respawning.
+- [ ] Extra entity damage events
 - [ ] In-Chat log viewing.
   - Post PvP, this may be nice to check.
