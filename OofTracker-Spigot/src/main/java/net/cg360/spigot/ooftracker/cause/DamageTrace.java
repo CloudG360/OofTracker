@@ -1,4 +1,4 @@
-package net.cg360.spigot.ooftracker.causes;
+package net.cg360.spigot.ooftracker.cause;
 
 import net.cg360.nsapi.commons.Check;
 import net.cg360.nsapi.commons.data.Settings;
@@ -80,7 +80,7 @@ public abstract class DamageTrace {
 
     /**
      * Sets the spigot DamageCause of the damage.
-     * @param vanillaCause
+     * @param vanillaCause the vanilla damage cause.
      */
     public void setVanillaCause(EntityDamageEvent.DamageCause vanillaCause) {
         this.vanillaCause = vanillaCause;

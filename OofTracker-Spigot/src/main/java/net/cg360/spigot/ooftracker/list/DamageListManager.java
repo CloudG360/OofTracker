@@ -1,4 +1,4 @@
-package net.cg360.spigot.ooftracker.lists;
+package net.cg360.spigot.ooftracker.list;
 
 import org.bukkit.entity.Entity;
 

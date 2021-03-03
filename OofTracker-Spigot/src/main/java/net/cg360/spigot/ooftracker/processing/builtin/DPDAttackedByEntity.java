@@ -1,10 +1,8 @@
-package net.cg360.spigot.ooftracker.processors.builtin;
+package net.cg360.spigot.ooftracker.processing.builtin;
 
-import net.cg360.spigot.ooftracker.causes.DamageTrace;
-import net.cg360.spigot.ooftracker.causes.builtin.DTAttackedByEntity;
-import net.cg360.spigot.ooftracker.causes.builtin.DTDefault;
-import net.cg360.spigot.ooftracker.processors.DamageProcessor;
-import net.cg360.spigot.ooftracker.processors.Priority;
+import net.cg360.spigot.ooftracker.cause.DamageTrace;
+import net.cg360.spigot.ooftracker.cause.builtin.DTAttackedByEntity;
+import net.cg360.spigot.ooftracker.processing.DamageProcessor;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 

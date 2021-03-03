@@ -1,4 +1,4 @@
-package net.cg360.spigot.ooftracker.processors;
+package net.cg360.spigot.ooftracker.processing;
 
 public enum Priority {
 

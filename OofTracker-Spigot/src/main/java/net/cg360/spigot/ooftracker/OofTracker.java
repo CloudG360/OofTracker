@@ -1,9 +1,9 @@
 package net.cg360.spigot.ooftracker;
 
-import net.cg360.spigot.ooftracker.lists.DamageListManager;
-import net.cg360.spigot.ooftracker.processors.DamageProcessing;
-import net.cg360.spigot.ooftracker.processors.builtin.DPDAttackedByEntity;
-import net.cg360.spigot.ooftracker.processors.builtin.DPDefault;
+import net.cg360.spigot.ooftracker.list.DamageListManager;
+import net.cg360.spigot.ooftracker.processing.DamageProcessing;
+import net.cg360.spigot.ooftracker.processing.builtin.DPDAttackedByEntity;
+import net.cg360.spigot.ooftracker.processing.builtin.DPDefault;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 

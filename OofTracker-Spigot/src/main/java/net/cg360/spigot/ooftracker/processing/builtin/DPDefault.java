@@ -1,8 +1,8 @@
-package net.cg360.spigot.ooftracker.processors.builtin;
+package net.cg360.spigot.ooftracker.processing.builtin;
 
-import net.cg360.spigot.ooftracker.causes.DamageTrace;
-import net.cg360.spigot.ooftracker.causes.builtin.DTDefault;
-import net.cg360.spigot.ooftracker.processors.DamageProcessor;
+import net.cg360.spigot.ooftracker.cause.DamageTrace;
+import net.cg360.spigot.ooftracker.cause.builtin.DTDefault;
+import net.cg360.spigot.ooftracker.processing.DamageProcessor;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 public class DPDefault extends DamageProcessor {

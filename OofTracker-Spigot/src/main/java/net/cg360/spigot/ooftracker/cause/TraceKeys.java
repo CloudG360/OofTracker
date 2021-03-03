@@ -1,4 +1,4 @@
-package net.cg360.spigot.ooftracker.causes;
+package net.cg360.spigot.ooftracker.cause;
 
 import net.cg360.nsapi.commons.data.keyvalue.Key;
 import net.cg360.nsapi.commons.id.Namespace;

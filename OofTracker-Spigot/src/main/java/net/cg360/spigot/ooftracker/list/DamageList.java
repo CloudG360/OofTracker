@@ -1,8 +1,8 @@
-package net.cg360.spigot.ooftracker.lists;
+package net.cg360.spigot.ooftracker.list;
 
 import net.cg360.nsapi.commons.Check;
 import net.cg360.spigot.ooftracker.OofTracker;
-import net.cg360.spigot.ooftracker.causes.DamageTrace;
+import net.cg360.spigot.ooftracker.cause.DamageTrace;
 
 import java.util.LinkedList;
 import java.util.UUID;

@@ -1,6 +1,6 @@
-package net.cg360.spigot.ooftracker.processors;
+package net.cg360.spigot.ooftracker.processing;
 
-import net.cg360.spigot.ooftracker.causes.DamageTrace;
+import net.cg360.spigot.ooftracker.cause.DamageTrace;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.util.Optional;

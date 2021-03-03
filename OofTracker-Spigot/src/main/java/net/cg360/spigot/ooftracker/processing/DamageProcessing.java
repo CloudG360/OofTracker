@@ -1,10 +1,10 @@
-package net.cg360.spigot.ooftracker.processors;
+package net.cg360.spigot.ooftracker.processing;
 
 import net.cg360.nsapi.commons.Check;
 import net.cg360.spigot.ooftracker.OofTracker;
-import net.cg360.spigot.ooftracker.causes.DamageTrace;
-import net.cg360.spigot.ooftracker.causes.TraceKeys;
-import net.cg360.spigot.ooftracker.lists.DamageList;
+import net.cg360.spigot.ooftracker.cause.DamageTrace;
+import net.cg360.spigot.ooftracker.cause.TraceKeys;
+import net.cg360.spigot.ooftracker.list.DamageList;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
@@ -18,12 +18,12 @@ import java.util.UUID;
 
 public class DamageProcessing implements Listener {
 
-    protected List<UUID> ignoredEvents; // Used to block events caused by custom damage.
+    protected List<UUID> ignoredVanillaEvents; // Used to block events caused by custom damage.
     protected List<DamageProcessor> damageProcessors;
 
 
     public DamageProcessing() {
-        this.ignoredEvents = new ArrayList<>();
+        this.ignoredVanillaEvents = new ArrayList<>();
         this.damageProcessors = new ArrayList<>();
     }
 
@@ -48,7 +48,7 @@ public class DamageProcessing implements Listener {
 
             // Add the entity to the list of ignored events
             // Then damage without the event triggering :)
-            ignoredEvents.add(entity.getUniqueId());
+            ignoredVanillaEvents.add(entity.getUniqueId());
 
             if(attacker == null) {
                 entity.damage(trace.getFinalDamageDealt());
@@ -85,7 +85,9 @@ public class DamageProcessing implements Listener {
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
 
-        if(!ignoredEvents.remove(event.getEntity().getUniqueId())) { // If an item gets removed (thus, it existed)
+        if(!ignoredVanillaEvents.remove(event.getEntity().getUniqueId())) {
+            // ^ If an item gets removed, it must've existed.
+            // Thus, only run the following if nothing was removed.
 
             for (DamageProcessor processor : damageProcessors) {
                 Optional<DamageTrace> trace = processor.getDamageTrace(event);
