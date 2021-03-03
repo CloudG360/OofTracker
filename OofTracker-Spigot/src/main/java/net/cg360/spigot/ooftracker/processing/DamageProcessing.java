@@ -8,8 +8,11 @@ import net.cg360.spigot.ooftracker.list.DamageList;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +85,8 @@ public class DamageProcessing implements Listener {
 
 
 
-    @EventHandler
+    // Should be last in the chain, ignoring if the event has been cancelled.
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent event) {
 
         if(!ignoredVanillaEvents.remove(event.getEntity().getUniqueId())) {
@@ -100,6 +104,18 @@ public class DamageProcessing implements Listener {
 
             // Panic! The default DamageTrace generator should've been last.
             throw new IllegalStateException("Default DamageProcessor didn't kick in. Why's it broke? :<");
+        }
+    }
+
+    // Like damage, it should be within the end of the chain.
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onEntityDeath(EntityDeathEvent event) {
+        // Doesn't seem to have a named animal death event.
+        // If there's a death of a pet, there'll be no custom death message as that doesn't
+        // seem to have a setter.
+
+        if(event instanceof PlayerDeathEvent) {
+            ((PlayerDeathEvent) event).setDeathMessage(""); // Handle deaths in damage event.
         }
     }
 
