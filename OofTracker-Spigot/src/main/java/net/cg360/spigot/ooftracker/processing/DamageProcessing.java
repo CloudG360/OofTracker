@@ -9,6 +9,7 @@ import net.cg360.spigot.ooftracker.cause.TraceKeys;
 import net.cg360.spigot.ooftracker.list.DamageList;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -44,26 +45,29 @@ public class DamageProcessing implements Listener {
     public boolean applyCustomDamage(DamageTrace trace) {
         Check.nullParam(trace, "Damage Trace");
 
-        if(trace.getVictim() instanceof Damageable) {
-            Damageable entity = (Damageable) trace.getVictim();
-            Entity attacker = trace.getData().get(TraceKeys.ATTACKER_ENTITY);
+        if(trace.getVictim() instanceof Player || Util.check(ConfigKeys.LIST_NON_PLAYER_ENABLED, true)) {
 
-            // The following Entity#damage() calls are only to support
-            // Spigot damage events + update player health.
+            if (trace.getVictim() instanceof Damageable) {
+                Damageable entity = (Damageable) trace.getVictim();
+                Entity attacker = trace.getData().get(TraceKeys.ATTACKER_ENTITY);
 
-            // Add the entity to the list of ignored events
-            // Then damage without the event triggering :)
-            ignoredVanillaEvents.add(entity.getUniqueId());
+                // The following Entity#damage() calls are only to support
+                // Spigot damage events + update player health.
 
-            if(attacker == null) {
-                entity.damage(trace.getFinalDamageDealt());
+                // Add the entity to the list of ignored events
+                // Then damage without the event triggering :)
+                ignoredVanillaEvents.add(entity.getUniqueId());
 
-            } else { // Had an attacker, trigger damage with attacker.
-                entity.damage(trace.getFinalDamageDealt(), attacker);
+                if (attacker == null) {
+                    entity.damage(trace.getFinalDamageDealt());
+
+                } else { // Had an attacker, trigger damage with attacker.
+                    entity.damage(trace.getFinalDamageDealt(), attacker);
+                }
+
+                pushTrace(entity, trace);
+                return true;
             }
-
-            pushTrace(entity, trace);
-            return true;
         }
 
         return false;
@@ -91,21 +95,25 @@ public class DamageProcessing implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent event) {
 
-        if(!ignoredVanillaEvents.remove(event.getEntity().getUniqueId())) {
-            // ^ If an item gets removed, it must've existed.
-            // Thus, only run the following if nothing was removed.
+        // If it's a player or if non-player lists are enabled, do.
+        if(event.getEntity() instanceof Player || Util.check(ConfigKeys.LIST_NON_PLAYER_ENABLED, true)) {
 
-            for (DamageProcessor processor : damageProcessors) {
-                Optional<DamageTrace> trace = processor.getDamageTrace(event);
+            if (!ignoredVanillaEvents.remove(event.getEntity().getUniqueId())) {
+                // ^ If an item gets removed, it must've existed.
+                // Thus, only run the following if nothing was removed.
 
-                if(trace.isPresent()) {
-                    pushTrace(event.getEntity(), trace.get());
-                    return;
+                for (DamageProcessor processor : damageProcessors) {
+                    Optional<DamageTrace> trace = processor.getDamageTrace(event);
+
+                    if (trace.isPresent()) {
+                        pushTrace(event.getEntity(), trace.get());
+                        return;
+                    }
                 }
-            }
 
-            // Panic! The default DamageTrace generator should've been last.
-            throw new IllegalStateException("Default DamageProcessor didn't kick in. Why's it broke? :<");
+                // Panic! The default DamageTrace generator should've been last.
+                throw new IllegalStateException("Default DamageProcessor didn't kick in. Why's it broke? :<");
+            }
         }
     }
 

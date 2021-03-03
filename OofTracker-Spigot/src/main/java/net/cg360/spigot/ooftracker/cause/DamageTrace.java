@@ -117,13 +117,11 @@ public abstract class DamageTrace {
 
     @Override
     public String toString() {
-        return "DamageTrace{" +
+        return "DAMAGE -> " +
                 "time=" + time +
                 ", victim=" + victim +
-                ", originalDamageDealt=" + originalDamageDealt +
-                ", finalDamageDealt=" + finalDamageDealt +
-                ", vanillaCause=" + vanillaCause +
-                ", type = " + getTraceType() +
-                '}';
+                ", damage=" + finalDamageDealt +
+                ", vCause=" + vanillaCause +
+                ", type = " + getTraceType();
     }
 }

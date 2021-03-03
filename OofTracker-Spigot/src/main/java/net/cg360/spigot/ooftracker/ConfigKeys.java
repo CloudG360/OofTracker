@@ -14,7 +14,9 @@ public final class ConfigKeys {
 
     // -- Damage Lists --
 
-    // Should entities which aren't players be tracked?
+    // Should entities which aren't players be tracked? Does not prevent *direct* custom damage traces being pushed
+    // but does prevent *indirect* custom damage traces.
+    // Only stops OofTracker events for non-players + registering any visible damage calls.
     public static final Key<Boolean> LIST_NON_PLAYER_ENABLED = new Key<>("non-player-lists-enabled"); // default: true
 
     // Should a given DamageList be cleared once it's entity dies?
