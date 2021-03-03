@@ -25,7 +25,7 @@ public final class ConfigKeys {
     // -- Death Messages --
 
     // Are custom death messages enabled?
-    public static final Key<Boolean> DEATH_MESSAGES_ENABLED = new Key<>("death-messages-enabled");
+    public static final Key<Boolean> DEATH_MESSAGE_OVERRIDE = new Key<>("death-message-override"); // default: true
 
     // Are the bonus tags at the end of assisted deaths enabled?
     public static final Key<Boolean> ASSIST_TAGS_ENABLED = new Key<>("assist-tags-enabled"); // default: true

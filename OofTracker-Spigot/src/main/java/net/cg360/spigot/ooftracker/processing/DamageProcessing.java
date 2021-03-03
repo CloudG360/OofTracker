@@ -1,7 +1,9 @@
 package net.cg360.spigot.ooftracker.processing;
 
 import net.cg360.nsapi.commons.Check;
+import net.cg360.spigot.ooftracker.ConfigKeys;
 import net.cg360.spigot.ooftracker.OofTracker;
+import net.cg360.spigot.ooftracker.Util;
 import net.cg360.spigot.ooftracker.cause.DamageTrace;
 import net.cg360.spigot.ooftracker.cause.TraceKeys;
 import net.cg360.spigot.ooftracker.list.DamageList;
@@ -114,8 +116,8 @@ public class DamageProcessing implements Listener {
         // If there's a death of a pet, there'll be no custom death message as that doesn't
         // seem to have a setter.
 
-        if(event instanceof PlayerDeathEvent) {
-            ((PlayerDeathEvent) event).setDeathMessage(""); // Handle deaths in damage event.
+        if((event instanceof PlayerDeathEvent) && (!Util.check(ConfigKeys.DEATH_MESSAGE_OVERRIDE, true))) {
+            ((PlayerDeathEvent) event).setDeathMessage(""); // Handle deaths in damage event if death messages are overriden.
         }
     }
 
