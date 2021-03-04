@@ -18,6 +18,11 @@ public class DamageStack {
         this.stack = new LinkedList<>();
     }
 
+    protected DamageStack(DamageStack previousStack) {
+        this.owner = previousStack.owner;
+        this.stack = new LinkedList<>(previousStack.stack);
+    }
+
 
     /** Adds a DamageTrace to the top of the DamageStack stack. */
     public void push(DamageTrace trace) {
@@ -51,6 +56,11 @@ public class DamageStack {
     /** Clears the DamageStack stack. */
     public void clear() {
         this.stack.clear();
+    }
+
+    /** Duplicates the stack. */
+    public DamageStack duplicate() {
+        return new DamageStack(this);
     }
 
 
