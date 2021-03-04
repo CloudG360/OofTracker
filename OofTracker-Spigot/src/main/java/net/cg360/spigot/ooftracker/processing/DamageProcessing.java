@@ -13,6 +13,8 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
+import net.minecraft.server.v1_16_R3.DamageSource;
+import net.minecraft.server.v1_16_R3.EntityPlayer;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -157,6 +159,7 @@ public class DamageProcessing implements Listener {
                     Entity root = t.getData().get(TraceKeys.ATTACKER_ROOT);
 
                     if(root instanceof Player) {
+                        //TODO: PING!
                         assistBuilder.append(t);
                         lastSuccessful = true;
                         continue;
@@ -176,7 +179,11 @@ public class DamageProcessing implements Listener {
                     text.addExtra(assistAddon);
                 }
 
-                e.getEntity().spigot().sendMessage(text); // Send message anyway, edited or not.
+
+                //TODO: Add a config for boardcast scopes - "SERVER" (Server's world), "WORLD" (Victim's world), "PARTICIPANTS" (Killers + Victim)
+                for(Player player: OofTracker.get().getServer().getOnlinePlayers()) {
+                    player.spigot().sendMessage(text); // Send message anyway, edited or not.
+                }
             }
         }
 
