@@ -1,13 +1,11 @@
 package net.cg360.spigot.ooftracker;
 
 import net.cg360.nsapi.commons.data.Settings;
-import net.cg360.nsapi.commons.data.keyvalue.Key;
-import net.cg360.spigot.ooftracker.list.DamageListManager;
+import net.cg360.spigot.ooftracker.list.DamageStackManager;
 import net.cg360.spigot.ooftracker.processing.DamageProcessing;
 import net.cg360.spigot.ooftracker.processing.builtin.DPDAttackedByEntity;
 import net.cg360.spigot.ooftracker.processing.builtin.DPDefault;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,7 +18,7 @@ public final class OofTracker extends JavaPlugin implements Listener {
 
     private static OofTracker oofTracker = null;
 
-    private DamageListManager damageListManager;
+    private DamageStackManager damageListManager;
     private DamageProcessing damageProcessing;
 
     private YamlConfiguration configurationFile;
@@ -35,7 +33,7 @@ public final class OofTracker extends JavaPlugin implements Listener {
             loadConfiguration();
 
             // -- Set Managers --
-            this.damageListManager = new DamageListManager();
+            this.damageListManager = new DamageStackManager();
             this.damageProcessing = new DamageProcessing();
 
             this.damageListManager.setAsPrimaryManager();
@@ -75,7 +73,10 @@ public final class OofTracker extends JavaPlugin implements Listener {
                     .set(ConfigKeys.DAMAGE_LISTS_ONLY, config.getBoolean(ConfigKeys.DAMAGE_LISTS_ONLY.get(), false))
 
                     .set(ConfigKeys.LIST_NON_PLAYER_ENABLED, config.getBoolean(ConfigKeys.LIST_NON_PLAYER_ENABLED.get(), true))
-                    .set(ConfigKeys.LIST_CLEAR_ON_DEATH, config.getBoolean(ConfigKeys.LIST_CLEAR_ON_DEATH.get(), true));
+                    .set(ConfigKeys.LIST_CLEAR_ON_DEATH, config.getBoolean(ConfigKeys.LIST_CLEAR_ON_DEATH.get(), true))
+
+                    .set(ConfigKeys.DEATH_MESSAGE_OVERRIDE, config.getBoolean(ConfigKeys.DEATH_MESSAGE_OVERRIDE.get(), true))
+            ;
 
             return true;
 
@@ -91,7 +92,7 @@ public final class OofTracker extends JavaPlugin implements Listener {
 
     public static Logger getLog() { return get().getLogger(); }
     public static DamageProcessing getDamageProcessingManager() { return get().damageProcessing; }
-    public static DamageListManager getDamageListManager() { return get().damageListManager; }
+    public static DamageStackManager getDamageListManager() { return get().damageListManager; }
     public static Settings getConfiguration() { return get().configuration; }
     public static YamlConfiguration getConfigurationFile() { return get().configurationFile; }
 }
