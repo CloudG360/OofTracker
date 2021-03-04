@@ -19,12 +19,12 @@ public final class ConfigKeys {
     // Only stops OofTracker events for non-players + registering any visible damage calls.
     public static final Key<Boolean> LIST_NON_PLAYER_ENABLED = new Key<>("non-player-lists-enabled"); // default: true
 
-    // Should a given DamageList be cleared once it's entity dies?
+    // Should a given DamageStack be cleared once it's entity dies?
     public static final Key<Boolean> LIST_CLEAR_ON_DEATH = new Key<>("clear-list-on-death"); // default: true
 
 
 
-    // -- Death Messages --
+    // -- Deaths --
 
     // Are custom death messages enabled?
     public static final Key<Boolean> DEATH_MESSAGE_OVERRIDE = new Key<>("death-message-override"); // default: true
@@ -32,10 +32,7 @@ public final class ConfigKeys {
     // Are the bonus tags at the end of assisted deaths enabled?
     public static final Key<Boolean> ASSIST_TAGS_ENABLED = new Key<>("assist-tags-enabled"); // default: true
 
-    // Are kill notices enabled?
-    public static final Key<Boolean> KILL_NOTICES_ENABLED = new Key<>("kill-notices-enabled"); // default: false
-
-    // Are assist-kill notices enabled? Only triggered when you are not the final killer.
-    public static final Key<Boolean> ASSIST_KILL_NOTICES_ENABLED = new Key<>("assist-kill-notices-enabled"); // default: true
+    // Do assists + killers broadcast an audible ping on kill?
+    public static final Key<Boolean> PING_ON_KILL = new Key<>("ping-on-kill"); // default: true
 
 }
