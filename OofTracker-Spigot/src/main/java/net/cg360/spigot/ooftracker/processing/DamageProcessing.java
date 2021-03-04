@@ -15,6 +15,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import net.minecraft.server.v1_16_R3.DamageSource;
 import net.minecraft.server.v1_16_R3.EntityPlayer;
+import org.bukkit.Sound;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -159,7 +160,11 @@ public class DamageProcessing implements Listener {
                     Entity root = t.getData().get(TraceKeys.ATTACKER_ROOT);
 
                     if(root instanceof Player) {
-                        //TODO: PING!
+                        Player p = (Player) root;
+
+                        if (Util.check(ConfigKeys.PING_ON_KILL, true)) {
+                            p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
+                        }
                         assistBuilder.append(t);
                         lastSuccessful = true;
                         continue;
