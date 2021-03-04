@@ -6,7 +6,13 @@ import net.cg360.spigot.ooftracker.OofTracker;
 import net.cg360.spigot.ooftracker.Util;
 import net.cg360.spigot.ooftracker.cause.DamageTrace;
 import net.cg360.spigot.ooftracker.cause.TraceKeys;
-import net.cg360.spigot.ooftracker.list.DamageList;
+import net.cg360.spigot.ooftracker.list.DamageStack;
+import net.cg360.spigot.ooftracker.list.DamageStackManager;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -24,12 +30,12 @@ import java.util.UUID;
 
 public class DamageProcessing implements Listener {
 
-    protected List<UUID> ignoredVanillaEvents; // Used to block events caused by custom damage.
+    protected List<UUID> customDamageCalls; // Used to block events caused by custom damage.
     protected List<DamageProcessor> damageProcessors;
 
 
     public DamageProcessing() {
-        this.ignoredVanillaEvents = new ArrayList<>();
+        this.customDamageCalls = new ArrayList<>();
         this.damageProcessors = new ArrayList<>();
     }
 
@@ -39,7 +45,7 @@ public class DamageProcessing implements Listener {
      * Applies custom damage to an entity, thus skipping the
      * DamageProcessing system and appending the DamageTrace
      * on directly
-     * @param trace a damage trace to be applied to the DamageList stack
+     * @param trace a damage trace to be applied to the DamageStack stack
      * @return true if the damage has been applied.
      */
     public boolean applyCustomDamage(DamageTrace trace) {
@@ -56,7 +62,7 @@ public class DamageProcessing implements Listener {
 
                 // Add the entity to the list of ignored events
                 // Then damage without the event triggering :)
-                ignoredVanillaEvents.add(entity.getUniqueId());
+                customDamageCalls.add(entity.getUniqueId());
 
                 if (attacker == null) {
                     entity.damage(trace.getFinalDamageDealt());
@@ -98,7 +104,7 @@ public class DamageProcessing implements Listener {
         // If it's a player or if non-player lists are enabled, do.
         if(event.getEntity() instanceof Player || Util.check(ConfigKeys.LIST_NON_PLAYER_ENABLED, true)) {
 
-            if (!ignoredVanillaEvents.remove(event.getEntity().getUniqueId())) {
+            if (!customDamageCalls.remove(event.getEntity().getUniqueId())) {
                 // ^ If an item gets removed, it must've existed.
                 // Thus, only run the following if nothing was removed.
 
@@ -117,22 +123,73 @@ public class DamageProcessing implements Listener {
         }
     }
 
+    // Called to set death message.
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onEntityDeathLow(EntityDeathEvent event) {
+
+    }
+
     // Like damage, it should be within the end of the chain.
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onEntityDeath(EntityDeathEvent event) {
+    public void onEntityDeathHigh(EntityDeathEvent event) {
+
         // Doesn't seem to have a named animal death event.
         // If there's a death of a pet, there'll be no custom death message as that doesn't
         // seem to have a setter.
+        if (event instanceof PlayerDeathEvent) {
+            PlayerDeathEvent e = (PlayerDeathEvent) event;
 
-        if((event instanceof PlayerDeathEvent) && (!Util.check(ConfigKeys.DEATH_MESSAGE_OVERRIDE, true))) {
-            ((PlayerDeathEvent) event).setDeathMessage(""); // Handle deaths in damage event if death messages are overriden.
+            if (Util.check(ConfigKeys.ASSIST_TAGS_ENABLED, true)) {
+                TextComponent text = new TextComponent(e.getDeathMessage());
+                e.setDeathMessage(""); // As we're sending raw, do not send original.
+
+                DamageStack stack = DamageStackManager.get().getDamageList(event.getEntity()).duplicate();
+                StringBuilder assistBuilder = new StringBuilder();
+
+                boolean lastSuccessful = false;
+
+                while (!stack.isEmpty()) {
+
+                    if(lastSuccessful) {
+                        assistBuilder.append(", "); // Add a comma if the last cycle was appended.
+                    }
+                    DamageTrace t = stack.pop();
+                    Entity root = t.getData().get(TraceKeys.ATTACKER_ROOT);
+
+                    if(root instanceof Player) {
+                        assistBuilder.append(t);
+                        lastSuccessful = true;
+                        continue;
+                    }
+                    lastSuccessful = false;
+                }
+
+                String buildString = assistBuilder.toString();
+
+                if (buildString.length() > 0) {
+                    TextComponent assistInfo = new TextComponent(buildString);
+                    assistInfo.setColor(ChatColor.DARK_AQUA);
+
+                    TextComponent assistAddon = new TextComponent("(+ Assist)");
+                    assistAddon.setColor(ChatColor.AQUA);
+                    assistAddon.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(new ComponentBuilder(assistInfo).create())));
+                    text.addExtra(assistAddon);
+                }
+
+                e.getEntity().spigot().sendMessage(text); // Send message anyway, edited or not.
+            }
+        }
+
+        if(Util.check(ConfigKeys.LIST_CLEAR_ON_DEATH, true)) {
+            DamageStackManager.get().getDamageList(event.getEntity()).clear();
+
+            //TODO: Broadcast list clear event
         }
     }
 
 
-
     private static void pushTrace(Entity entity, DamageTrace t) {
-        DamageList ls = OofTracker.getDamageListManager().getDamageList(entity);
+        DamageStack ls = OofTracker.getDamageListManager().getDamageList(entity);
         ls.push(t);
     }
 }
