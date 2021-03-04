@@ -9,9 +9,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 public class DTAttackedByEntity extends DamageTrace {
 
-    protected Entity attacker;
-
-
     public DTAttackedByEntity(EntityDamageEvent eventIn) {
         super(eventIn);
         if(!(eventIn instanceof EntityDamageByEntityEvent)) throw new IllegalArgumentException("Event must be of type EntityDamageByEntityEvent");
@@ -40,6 +37,20 @@ public class DTAttackedByEntity extends DamageTrace {
                 this.rawData.set(TraceKeys.ATTACKER_ROOT, (Entity) projectile.getShooter());
             }
         }
+
+    }
+
+    /** @return the attacker entity. */
+    public Entity getAttacker() {
+        return this.rawData.get(TraceKeys.ATTACKER_ENTITY);
+    }
+
+    /**
+     * May be the same as #getAttacker()
+     * @return the root attacking entity (pet owner, projectile firer, etc)
+     */
+    public Entity getRootAttacker() {
+        return this.rawData.get(TraceKeys.ATTACKER_ROOT);
     }
 
     @Override
