@@ -17,7 +17,7 @@ public class TraceKeys {
     public static final Key<Double> FINAL_DAMAGE = new Key<>(NAME.id("final_damage"));
     public static final Key<EntityDamageEvent.DamageCause> VANILLA_CAUSE = new Key<>(NAME.id("vanilla_cause"));
 
-    public static final Key<Player> ATTACKING_PLAYER = new Key<>(NAME.id("attacking_player")); // The root player of an attack. Could be a pet owner.
+    public static final Key<Entity> ATTACKER_ROOT = new Key<>(NAME.id("attacking_root")); // The root entity of an attack. Could be a pet owner.
     public static final Key<Entity> ATTACKER_ENTITY = new Key<>(NAME.id("attacker")); // The entity that caused an attack
 
 }

@@ -3,10 +3,7 @@ package net.cg360.spigot.ooftracker.cause.builtin;
 import net.cg360.nsapi.commons.id.Identifier;
 import net.cg360.spigot.ooftracker.cause.DamageTrace;
 import net.cg360.spigot.ooftracker.cause.TraceKeys;
-import org.bukkit.entity.Damageable;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Tameable;
+import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
@@ -20,26 +17,27 @@ public class DTAttackedByEntity extends DamageTrace {
         if(!(eventIn instanceof EntityDamageByEntityEvent)) throw new IllegalArgumentException("Event must be of type EntityDamageByEntityEvent");
 
         EntityDamageByEntityEvent ev = (EntityDamageByEntityEvent) eventIn;
-        this.attacker = ev.getDamager();
-        this.rawData.set(TraceKeys.ATTACKER_ENTITY, this.attacker);
+        this.rawData.set(TraceKeys.ATTACKER_ENTITY, ev.getDamager());
     }
 
     public DTAttackedByEntity(Damageable victim, Entity attacker, double damageDealt) {
         super(victim, damageDealt);
-        this.attacker = attacker;
-        this.rawData.set(TraceKeys.ATTACKER_ENTITY, this.attacker);
+        this.rawData.set(TraceKeys.ATTACKER_ENTITY, attacker);
+        this.rawData.set(TraceKeys.ATTACKER_ROOT, attacker); // Set by default
 
-        if(attacker instanceof Player) {
-            this.rawData.set(TraceKeys.ATTACKING_PLAYER, (Player) this.attacker);
+        if(attacker instanceof Tameable) {
+            Tameable tame = (Tameable) attacker;
 
-        } else {
+            if(tame.getOwner() instanceof Entity) {
+                this.rawData.set(TraceKeys.ATTACKER_ROOT, (Entity) tame.getOwner());
+            }
+        }
 
-            if(attacker instanceof Tameable) {
-                Tameable tame = (Tameable) attacker;
+        if(attacker instanceof Projectile) {
+            Projectile projectile = (Projectile) attacker;
 
-                if(tame.getOwner() instanceof Player) {
-                    this.rawData.set(TraceKeys.ATTACKING_PLAYER, (Player) tame.getOwner());
-                }
+            if(projectile.getShooter() instanceof Entity) {
+                this.rawData.set(TraceKeys.ATTACKER_ROOT, (Entity) projectile.getShooter());
             }
         }
     }
