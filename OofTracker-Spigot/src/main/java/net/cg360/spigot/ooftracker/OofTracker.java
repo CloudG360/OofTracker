@@ -76,6 +76,8 @@ public final class OofTracker extends JavaPlugin implements Listener {
                     .set(ConfigKeys.LIST_CLEAR_ON_DEATH, config.getBoolean(ConfigKeys.LIST_CLEAR_ON_DEATH.get(), true))
 
                     .set(ConfigKeys.DEATH_MESSAGE_OVERRIDE, config.getBoolean(ConfigKeys.DEATH_MESSAGE_OVERRIDE.get(), true))
+                    .set(ConfigKeys.ASSIST_TAGS_ENABLED, config.getBoolean(ConfigKeys.ASSIST_TAGS_ENABLED.get(), true))
+                    .set(ConfigKeys.PING_ON_KILL, config.getBoolean(ConfigKeys.PING_ON_KILL.get(), true))
             ;
 
             return true;
