@@ -3,6 +3,7 @@ package net.cg360.spigot.ooftracker.cause;
 import net.cg360.nsapi.commons.data.keyvalue.Key;
 import net.cg360.nsapi.commons.id.Namespace;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 public class TraceKeys {
@@ -16,6 +17,7 @@ public class TraceKeys {
     public static final Key<Double> FINAL_DAMAGE = new Key<>(NAME.id("final_damage"));
     public static final Key<EntityDamageEvent.DamageCause> VANILLA_CAUSE = new Key<>(NAME.id("vanilla_cause"));
 
-    public static final Key<Entity> ATTACKER_ENTITY = new Key<>(NAME.id("attacker"));
+    public static final Key<Player> ATTACKING_PLAYER = new Key<>(NAME.id("attacking_player")); // The root player of an attack. Could be a pet owner.
+    public static final Key<Entity> ATTACKER_ENTITY = new Key<>(NAME.id("attacker")); // The entity that caused an attack
 
 }
