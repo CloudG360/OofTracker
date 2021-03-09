@@ -168,9 +168,13 @@ public class DamageProcessing implements Listener {
                             if (Util.check(ConfigKeys.PING_ON_KILL, true)) {
                                 p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
                             }
-                            assistBuilder.append(p.getName());
+
+                            if(Util.check(ConfigKeys.KILLER_IN_ASSIST_TAG, true)) {
+                                assistBuilder.append(p.getName()); // Only add killer to assist tag if true
+                                lastSuccessful = true; // Only applies to shown names.
+                            }
+
                             previousDamagers.add(p.getUniqueId());
-                            lastSuccessful = true;
                         }
                         continue;
                     }

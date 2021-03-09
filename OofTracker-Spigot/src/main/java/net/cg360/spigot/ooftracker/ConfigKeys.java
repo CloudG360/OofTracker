@@ -32,6 +32,9 @@ public final class ConfigKeys {
     // Are the bonus tags at the end of assisted deaths enabled?
     public static final Key<Boolean> ASSIST_TAGS_ENABLED = new Key<>("assist-tags-enabled"); // default: true
 
+    // Does the final killer show up in the assist tag? Depends on: ASSIST_TAGS_ENABLED
+    public static final Key<Boolean> KILLER_IN_ASSIST_TAG = new Key<>("killer-in-assist"); // default: true
+
     // Do assists + killers broadcast an audible ping on kill?
     public static final Key<Boolean> PING_ON_KILL = new Key<>("ping-on-kill"); // default: true
 
