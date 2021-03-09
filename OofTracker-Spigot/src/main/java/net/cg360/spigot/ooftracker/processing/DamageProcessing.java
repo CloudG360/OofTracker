@@ -191,6 +191,7 @@ public class DamageProcessing implements Listener {
 
 
                 //TODO: Add a config for boardcast scopes - "SERVER" (Server's world), "WORLD" (Victim's world), "PARTICIPANTS" (Killers + Victim)
+                OofTracker.getLog().info(text.getText());
                 for(Player player: OofTracker.get().getServer().getOnlinePlayers()) {
                     player.spigot().sendMessage(text); // Send message anyway, edited or not.
                 }
