@@ -150,6 +150,7 @@ public class DamageProcessing implements Listener {
                 StringBuilder assistBuilder = new StringBuilder();
 
                 boolean lastSuccessful = false;
+                ArrayList<UUID> previousDamagers = new ArrayList<>();
 
                 while (!stack.isEmpty()) {
 
@@ -162,11 +163,15 @@ public class DamageProcessing implements Listener {
                     if(root instanceof Player) {
                         Player p = (Player) root;
 
-                        if (Util.check(ConfigKeys.PING_ON_KILL, true)) {
-                            p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
+                        if(!previousDamagers.contains(p.getUniqueId())) {
+
+                            if (Util.check(ConfigKeys.PING_ON_KILL, true)) {
+                                p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
+                            }
+                            assistBuilder.append(p.getName());
+                            previousDamagers.add(p.getUniqueId());
+                            lastSuccessful = true;
                         }
-                        assistBuilder.append(p.getName());
-                        lastSuccessful = true;
                         continue;
                     }
                     lastSuccessful = false;
