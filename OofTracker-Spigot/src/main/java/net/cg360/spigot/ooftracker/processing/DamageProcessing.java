@@ -13,8 +13,6 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
-import net.minecraft.server.v1_16_R3.DamageSource;
-import net.minecraft.server.v1_16_R3.EntityPlayer;
 import org.bukkit.Sound;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
@@ -31,11 +29,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+//TODO: for when you wake up, send more stuff through death events
+//      Modern versions can handle instant respawns. You just handle setting drops + xp in death.
+
 public class DamageProcessing implements Listener {
 
     protected List<UUID> customDamageCalls; // Used to block events caused by custom damage.
     protected List<DamageProcessor> damageProcessors;
-
 
     public DamageProcessing() {
         this.customDamageCalls = new ArrayList<>();
@@ -201,7 +201,7 @@ public class DamageProcessing implements Listener {
 
 
     private static void pushTrace(Entity entity, DamageTrace t) {
-        DamageStack ls = OofTracker.getDamageListManager().getDamageList(entity);
+        DamageStack ls = OofTracker.getDamageStackManager().getDamageList(entity);
         ls.push(t);
     }
 }

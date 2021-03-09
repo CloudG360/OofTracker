@@ -18,7 +18,7 @@ public final class OofTracker extends JavaPlugin implements Listener {
 
     private static OofTracker oofTracker = null;
 
-    private DamageStackManager damageListManager;
+    private DamageStackManager damageStackManager;
     private DamageProcessing damageProcessing;
 
     private YamlConfiguration configurationFile;
@@ -33,10 +33,10 @@ public final class OofTracker extends JavaPlugin implements Listener {
             loadConfiguration();
 
             // -- Set Managers --
-            this.damageListManager = new DamageStackManager();
+            this.damageStackManager = new DamageStackManager();
             this.damageProcessing = new DamageProcessing();
 
-            this.damageListManager.setAsPrimaryManager();
+            this.damageStackManager.setAsPrimaryManager();
 
 
             // -- Register DamageProcessors --
@@ -94,7 +94,7 @@ public final class OofTracker extends JavaPlugin implements Listener {
 
     public static Logger getLog() { return get().getLogger(); }
     public static DamageProcessing getDamageProcessingManager() { return get().damageProcessing; }
-    public static DamageStackManager getDamageListManager() { return get().damageListManager; }
+    public static DamageStackManager getDamageStackManager() { return get().damageStackManager; }
     public static Settings getConfiguration() { return get().configuration; }
     public static YamlConfiguration getConfigurationFile() { return get().configurationFile; }
 }
