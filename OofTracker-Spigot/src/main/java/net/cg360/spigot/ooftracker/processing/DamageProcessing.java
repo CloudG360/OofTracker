@@ -165,7 +165,7 @@ public class DamageProcessing implements Listener {
                         if (Util.check(ConfigKeys.PING_ON_KILL, true)) {
                             p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
                         }
-                        assistBuilder.append(t);
+                        assistBuilder.append(p.getName());
                         lastSuccessful = true;
                         continue;
                     }
@@ -178,7 +178,7 @@ public class DamageProcessing implements Listener {
                     TextComponent assistInfo = new TextComponent(buildString);
                     assistInfo.setColor(ChatColor.DARK_AQUA);
 
-                    TextComponent assistAddon = new TextComponent("(+ Assist)");
+                    TextComponent assistAddon = new TextComponent(" (+ Assist)");
                     assistAddon.setColor(ChatColor.AQUA);
                     assistAddon.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(new ComponentBuilder(assistInfo).create())));
                     text.addExtra(assistAddon);
