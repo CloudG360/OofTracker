@@ -7,3 +7,8 @@ authors: [ CG360 ]
 description: Tracks player damage + deaths to add support for kill assists
 
 depend: [ "NSAPICommons" ]
+
+commands:
+  debugtest:
+    description: "Tests whatever I was last working on."
+    usage: "/debugtest"

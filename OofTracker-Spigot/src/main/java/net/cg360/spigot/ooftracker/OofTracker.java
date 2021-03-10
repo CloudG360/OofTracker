@@ -1,6 +1,7 @@
 package net.cg360.spigot.ooftracker;
 
 import net.cg360.nsapi.commons.data.Settings;
+import net.cg360.spigot.ooftracker.command.CommandDebug;
 import net.cg360.spigot.ooftracker.list.DamageStackManager;
 import net.cg360.spigot.ooftracker.processing.DamageProcessing;
 import net.cg360.spigot.ooftracker.processing.builtin.DPDAttackedByEntity;
@@ -45,6 +46,10 @@ public final class OofTracker extends JavaPlugin implements Listener {
 
             // -- Register DamageProcessing as Listener --
             this.getServer().getPluginManager().registerEvents(damageProcessing, this);
+
+
+            // -- Register Commands --
+            this.getCommand("debugtest").setExecutor(new CommandDebug());
 
         } catch (Exception err){
             oofTracker = null;
