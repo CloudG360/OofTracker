@@ -2,9 +2,7 @@ package net.cg360.spigot.ooftracker.command;
 
 import net.cg360.spigot.ooftracker.OofTracker;
 import net.cg360.spigot.ooftracker.nms.NMS;
-import net.minecraft.server.v1_16_R3.MathHelper;
-import net.minecraft.server.v1_16_R3.PacketPlayOutEntityMetadata;
-import net.minecraft.server.v1_16_R3.PacketPlayOutSpawnEntityLiving;
+import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -14,6 +12,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import java.util.List;
 import java.util.UUID;
 
 public class CommandDebug implements CommandExecutor {
@@ -32,6 +31,7 @@ public class CommandDebug implements CommandExecutor {
             try {
 
                 // -- ADD ENTITY --
+
                 NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "a", fakeEntityID); // Entity ID
                 NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "b", fakeEntityUUID); // Entity UUID
                 NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "c", NMS.NETID_ARMOUR_STAND); // Entity Type
@@ -44,8 +44,8 @@ public class CommandDebug implements CommandExecutor {
                 // Copy host entity's motion and follow.
                 Vector motion = cPlayer.getVelocity();
                 double dX = MathHelper.a(motion.getX(), -3.9D, 3.9D) * 8000D; // I think this is a clamping function + multiply?
-                double dY = MathHelper.a(motion.getY(), -3.9D, 3.9D) * 8000D;
-                double dZ = MathHelper.a(motion.getZ(), -3.9D, 3.9D) * 8000D;
+                double dY = MathHelper.a(motion.getY(), -3.9D, 3.9D) * 8000D;;
+                double dZ = MathHelper.a(motion.getZ(), -3.9D, 3.9D) * 8000D;;
                 NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "g", (int) dX); // Velocity X
                 NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "h", (int) dY); // Location Y
                 NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "i", (int) dZ); // Location Z
@@ -59,9 +59,25 @@ public class CommandDebug implements CommandExecutor {
                 NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "l", (byte) head); // Head rotate.
 
 
+
                 // -- UPDATE ENTITY META --
 
+                NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "a", fakeEntityID); // Entity ID
 
+                NBTTagCompound compoundTag = new NBTTagCompound();
+                compoundTag.setBoolean("Invisible", true);
+                compoundTag.setBoolean("Marker", true);
+                compoundTag.setString("CustomName", "Ooga Booga");
+                compoundTag.setBoolean("CustomNameVisible", true);
+
+                DataWatcherObject<NBTTagCompound> tagWatcher = new DataWatcherObject<>(14, DataWatcherRegistry.p);
+                DataWatcher.Item<NBTTagCompound> watcherItem = new DataWatcher.Item<>(tagWatcher, compoundTag);
+
+                List<DataWatcher.Item<?>> itemList = NMS.getClassField(PacketPlayOutEntityMetadata.class, metaPacket, "b");
+                itemList.add(watcherItem);
+
+                cPlayer.getHandle().playerConnection.sendPacket(addPacket);
+                cPlayer.getHandle().playerConnection.sendPacket(metaPacket);
 
             } catch (NoSuchFieldException err) {
                 OofTracker.getLog().severe("Error building packet. - No field! Is this the wrong version?");
@@ -74,10 +90,6 @@ public class CommandDebug implements CommandExecutor {
                 return false;
 
             }
-
-
-            cPlayer.getHandle().playerConnection.sendPacket(addPacket);
-            cPlayer.getHandle().playerConnection.sendPacket(metaPacket);
             return true;
         }
         return false;
