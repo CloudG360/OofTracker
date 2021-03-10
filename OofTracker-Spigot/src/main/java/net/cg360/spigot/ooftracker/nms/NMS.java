@@ -52,4 +52,16 @@ public class NMS {
         return (T) field.get(object); // Get the field
     }
 
+
+    public static <T> void setStaticClassField(Class<?> cls, String fieldName, T value) throws NoSuchFieldException, IllegalAccessException {
+        setClassField(cls, null, fieldName, value); // Get the ID and then increment it
+    }
+
+    @SuppressWarnings("unchecked") // We're throwing the error out anyway.
+    public static <T, O> void setClassField(Class<O> cls, O object, String fieldName, T value) throws NoSuchFieldException, IllegalAccessException {
+        Field field = cls.getDeclaredField(fieldName);
+        field.setAccessible(true); // Ensure accessible, might as well keep it open.
+        field.set(object, value); // Set the field to the value
+    }
+
 }
