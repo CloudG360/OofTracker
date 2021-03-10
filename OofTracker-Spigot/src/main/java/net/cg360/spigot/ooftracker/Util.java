@@ -2,6 +2,7 @@ package net.cg360.spigot.ooftracker;
 
 import net.cg360.nsapi.commons.data.keyvalue.Key;
 
+import java.util.Random;
 import java.util.UUID;
 
 public class Util {
@@ -16,6 +17,11 @@ public class Util {
         return OofTracker.getConfiguration().getOrElse(boolKey, orElse);
     }
 
+    /**
+     * Takes the current version UUID and pretends it's a version
+     * 2 UUID for NPCs.
+     * @return a version 2 UUID
+     */
     public static UUID generateUUIDv2() {
         UUID baseUUID = UUID.randomUUID();
 
@@ -32,5 +38,4 @@ public class Util {
 
         return baseUUID;
     }
-
 }
