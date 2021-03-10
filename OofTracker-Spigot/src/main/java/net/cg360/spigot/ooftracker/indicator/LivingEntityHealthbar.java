@@ -1,13 +1,9 @@
-package net.cg360.spigot.ooftracker.cause.indicators;
+package net.cg360.spigot.ooftracker.indicator;
 
 import net.cg360.spigot.ooftracker.ConfigKeys;
 import net.cg360.spigot.ooftracker.OofTracker;
-import net.cg360.spigot.ooftracker.Util;
 import net.cg360.spigot.ooftracker.nms.NMS;
-import net.minecraft.server.v1_16_R3.MathHelper;
-import net.minecraft.server.v1_16_R3.PacketPlayOutEntityDestroy;
-import net.minecraft.server.v1_16_R3.PacketPlayOutSpawnEntityLiving;
-import net.minecraft.server.v1_16_R3.Vec3D;
+import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
@@ -16,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.UUID;
 
 public class LivingEntityHealthbar {
@@ -64,9 +59,11 @@ public class LivingEntityHealthbar {
                         visibleToPlayers.add(p);
                         CraftPlayer cPlayer = (CraftPlayer) p;
                         PacketPlayOutSpawnEntityLiving addPacket = new PacketPlayOutSpawnEntityLiving(); // An armour stand is apparently living??
+                        PacketPlayOutEntityMetadata metaPacket = new PacketPlayOutEntityMetadata();
 
                         try {
 
+                            // -- ADD ENTITY --
                             NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "a", fakeEntityID); // Entity ID
                             NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "b", fakeEntityUUID); // Entity UUID
                             NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "c", EntityType.ARMOR_STAND); // Entity Type
@@ -93,6 +90,11 @@ public class LivingEntityHealthbar {
                             NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "k", (byte) pitch); // Pitch
                             NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "l", (byte) head); // Head rotate.
 
+
+                            // -- UPDATE ENTITY META --
+
+
+
                         } catch (NoSuchFieldException err) {
                             OofTracker.getLog().severe("Error building packet. - No field! Is this the wrong version?");
                             err.printStackTrace();
@@ -109,6 +111,7 @@ public class LivingEntityHealthbar {
 
 
                         cPlayer.getHandle().playerConnection.sendPacket(addPacket);
+                        cPlayer.getHandle().playerConnection.sendPacket(metaPacket);
                     }
                 }
 
