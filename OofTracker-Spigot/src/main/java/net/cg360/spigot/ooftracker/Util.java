@@ -2,6 +2,8 @@ package net.cg360.spigot.ooftracker;
 
 import net.cg360.nsapi.commons.data.keyvalue.Key;
 
+import java.util.UUID;
+
 public class Util {
 
     /**
@@ -12,6 +14,23 @@ public class Util {
      */
     public static boolean check(Key<Boolean> boolKey, boolean orElse) {
         return OofTracker.getConfiguration().getOrElse(boolKey, orElse);
+    }
+
+    public static UUID generateUUIDv2() {
+        UUID baseUUID = UUID.randomUUID();
+
+        // "For NPCs UUID v2 should be used. Note:"
+        // <+Grum> i will never confirm this as a feature you know that :)
+        // https://wiki.vg/Protocol#Spawn_Player
+
+        if (baseUUID.version() != 2) { // Version 4 -> Version 2
+            long mostSignificant = baseUUID.getMostSignificantBits();
+            mostSignificant &= ~0x0000000000004000L; // Ones compliment + AND
+            mostSignificant |= 0x0000000000002000L; // OR version 2 in
+            baseUUID = new UUID(mostSignificant, baseUUID.getLeastSignificantBits());
+        }
+
+        return baseUUID;
     }
 
 }
