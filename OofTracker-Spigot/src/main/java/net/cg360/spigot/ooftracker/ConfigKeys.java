@@ -38,4 +38,11 @@ public final class ConfigKeys {
     // Do assists + killers broadcast an audible ping on kill?
     public static final Key<Boolean> PING_ON_KILL = new Key<>("ping-on-kill"); // default: true
 
+
+
+    // -- Indicators --
+
+    // Are custom death messages enabled?
+    public static final Key<Double> HEALTH_BAR_VIEW_DISTANCE = new Key<>("health-view-distance"); // default: 20
+
 }

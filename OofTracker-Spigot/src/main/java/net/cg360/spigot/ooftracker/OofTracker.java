@@ -79,6 +79,8 @@ public final class OofTracker extends JavaPlugin implements Listener {
                     .set(ConfigKeys.ASSIST_TAGS_ENABLED, config.getBoolean(ConfigKeys.ASSIST_TAGS_ENABLED.get(), true))
                     .set(ConfigKeys.KILLER_IN_ASSIST_TAG, config.getBoolean(ConfigKeys.KILLER_IN_ASSIST_TAG.get(), true))
                     .set(ConfigKeys.PING_ON_KILL, config.getBoolean(ConfigKeys.PING_ON_KILL.get(), true))
+
+                    .set(ConfigKeys.HEALTH_BAR_VIEW_DISTANCE, config.getDouble(ConfigKeys.HEALTH_BAR_VIEW_DISTANCE.get(), 20d))
             ;
 
             return true;
