@@ -34,7 +34,7 @@ public class CommandDebug implements CommandExecutor {
                 // -- ADD ENTITY --
                 NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "a", fakeEntityID); // Entity ID
                 NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "b", fakeEntityUUID); // Entity UUID
-                NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "c", EntityType.ARMOR_STAND); // Entity Type
+                NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "c", NMS.NETID_ARMOUR_STAND); // Entity Type
 
                 // Copy host entity's location and follow
                 NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "d", cPlayer.getLocation().getX()); // Location X

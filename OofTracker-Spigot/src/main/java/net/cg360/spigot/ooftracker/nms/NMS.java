@@ -9,6 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class NMS {
 
+    public static final short NETID_ARMOUR_STAND = 1;
+
     /**
      * Hooks into the Entity NMS to return the current
      * value of the static field "entityCount" (Used for entity IDs),
@@ -20,7 +22,7 @@ public class NMS {
 
         try {
             AtomicInteger atomicInteger = getStaticClassField(cls, "entityCount"); // Assign to var cause generics.
-            return atomicInteger.getAndIncrement(); // Get the ID and then increment it
+            return atomicInteger.incrementAndGet(); // Get the ID and then increment it
 
         } catch (NoSuchFieldException err) {
             OofTracker.getLog().severe("Unable to increment entity ID - No field! Is this the wrong version?");
