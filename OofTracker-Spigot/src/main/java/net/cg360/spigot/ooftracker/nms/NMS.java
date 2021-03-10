@@ -19,11 +19,8 @@ public class NMS {
         Class<Entity> cls = Entity.class; // Get NMS Entity class
 
         try {
-            Field field = cls.getDeclaredField("entityCount");
-            field.setAccessible(true); // Ensure accessible, might as well keep it open.
-            AtomicInteger aI = (AtomicInteger) field.get(null); // Get static field.
-
-            return aI.getAndIncrement(); // Get the ID and then increment it
+            AtomicInteger atomicInteger = getStaticClassField(cls, "entityCount"); // Assign to var cause generics.
+            return atomicInteger.getAndIncrement(); // Get the ID and then increment it
 
         } catch (NoSuchFieldException err) {
             OofTracker.getLog().severe("Unable to increment entity ID - No field! Is this the wrong version?");
@@ -40,6 +37,19 @@ public class NMS {
             err.printStackTrace();
             return new Random().nextInt(Integer.MAX_VALUE - 10);
         }
+    }
+
+
+    public static <T> T getStaticClassField(Class<?> cls, String fieldName) throws NoSuchFieldException, IllegalAccessException, ClassCastException {
+        return getClassField(cls, null, fieldName); // Get the ID and then increment it
+    }
+
+    @SuppressWarnings("unchecked") // We're throwing the error out anyway.
+    public static <T, O> T getClassField(Class<O> cls, O object, String fieldName) throws NoSuchFieldException, IllegalAccessException, ClassCastException {
+        Field field = cls.getDeclaredField(fieldName);
+        field.setAccessible(true); // Ensure accessible, might as well keep it open.
+
+        return (T) field.get(object); // Get the field
     }
 
 }
