@@ -106,8 +106,9 @@ public class LivingEntityHealthbar {
                             DataWatcherObject<NBTTagCompound> tagWatcher = new DataWatcherObject<>(14, DataWatcherRegistry.p);
                             DataWatcher.Item<NBTTagCompound> watcherItem = new DataWatcher.Item<>(tagWatcher, compoundTag);
 
-                            List<DataWatcher.Item<?>> itemList = NMS.getClassField(PacketPlayOutEntityMetadata.class, metaPacket, "b");
+                            List<DataWatcher.Item<?>> itemList = new ArrayList<>();
                             itemList.add(watcherItem);
+                            NMS.setClassField(PacketPlayOutEntityMetadata.class, metaPacket, "b", itemList);
 
                             cPlayer.getHandle().playerConnection.sendPacket(addPacket);
                             cPlayer.getHandle().playerConnection.sendPacket(metaPacket);

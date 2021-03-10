@@ -12,6 +12,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -73,8 +74,9 @@ public class CommandDebug implements CommandExecutor {
                 DataWatcherObject<NBTTagCompound> tagWatcher = new DataWatcherObject<>(14, DataWatcherRegistry.p);
                 DataWatcher.Item<NBTTagCompound> watcherItem = new DataWatcher.Item<>(tagWatcher, compoundTag);
 
-                List<DataWatcher.Item<?>> itemList = NMS.getClassField(PacketPlayOutEntityMetadata.class, metaPacket, "b");
+                List<DataWatcher.Item<?>> itemList = new ArrayList<>();
                 itemList.add(watcherItem);
+                NMS.setClassField(PacketPlayOutEntityMetadata.class, metaPacket, "b", itemList);
 
                 cPlayer.getHandle().playerConnection.sendPacket(addPacket);
                 cPlayer.getHandle().playerConnection.sendPacket(metaPacket);
