@@ -1,16 +1,13 @@
-package net.cg360.spigot.ooftracker.entity;
+package net.cg360.spigot.ooftracker.nms.entity;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import net.cg360.nsapi.commons.Utility;
 import net.cg360.spigot.ooftracker.Util;
 import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 
-import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 import java.util.UUID;
 
 public class EntityDummy {
