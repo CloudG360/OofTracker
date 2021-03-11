@@ -181,6 +181,10 @@ public class DamageProcessing implements Listener {
                     lastSuccessful = false;
                 }
 
+                if(!lastSuccessful) {
+                    assistBuilder.substring(0, assistBuilder.length() - 2);
+                }
+
                 String buildString = assistBuilder.toString();
 
                 if (buildString.length() > 0) {
