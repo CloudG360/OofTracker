@@ -5,6 +5,7 @@ import net.cg360.spigot.ooftracker.OofTracker;
 import net.cg360.spigot.ooftracker.nms.NMS;
 import net.cg360.spigot.ooftracker.nms.RawTextBuilder;
 import net.minecraft.server.v1_16_R3.*;
+import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.LivingEntity;
@@ -20,6 +21,7 @@ public class LivingEntityHealthBar {
 
     private static final DecimalFormat HEALTH_FORMAT = new DecimalFormat("0.0");
 
+    protected Location lastLocation;
     protected LivingEntity hostEntity;
     protected ArrayList<Player> visibleToPlayers;
 
@@ -31,6 +33,7 @@ public class LivingEntityHealthBar {
 
     // Should only be instantiated from the HealthBarManager
     protected LivingEntityHealthBar(LivingEntity host) {
+        this.lastLocation = new Location(host.getWorld(), 0, 0, 0, 0, 0);
         this.hostEntity = host;
         this.visibleToPlayers = new ArrayList<>();
 
@@ -42,7 +45,7 @@ public class LivingEntityHealthBar {
 
 
 
-    public void update() {
+    public void updateDisplay() {
         double maxDistance = OofTracker.getConfiguration().getOrElse(ConfigKeys.HEALTH_BAR_VIEW_DISTANCE, 20d);
 
         for(Player p: hostEntity.getWorld().getPlayers()) {
@@ -141,10 +144,58 @@ public class LivingEntityHealthBar {
         }
     }
 
+    // If you find an entity movement event, PLEASE just use that. Running this every tick is stupid.
+    public void updatePositionAndVelocity() {
+
+        if(checkAndUpdateLastLocation()) {
+            for (Player player : visibleToPlayers) {
+
+                try {
+                    PacketPlayOutEntityTeleport packetTeleport = new PacketPlayOutEntityTeleport();
+                    PacketPlayOutEntityVelocity packetVelocity = new PacketPlayOutEntityVelocity(fakeEntityID, new Vec3D(lastLocation.getX(), lastLocation.getY(), lastLocation.getZ()));
+
+                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "b", lastLocation.getX()); // Pos X
+                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "c", lastLocation.getY()); // Pos Y
+                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "d", lastLocation.getZ()); // Pos Z
+
+                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "e", lastLocation.getYaw()); // Y rot (Yaw)
+                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "f", lastLocation.getPitch()); // X rot (Pitch)
+
+                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "g", false); //On Ground?
+
+                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packetTeleport);
+                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packetVelocity);
+
+                } catch (NoSuchFieldException err) {
+                    OofTracker.getLog().severe("Error building packet. - No field! Is this the wrong version?");
+                    err.printStackTrace();
+                    return;
+
+                } catch (IllegalAccessException err) {
+                    OofTracker.getLog().severe("Error building packet - Can't access field! Is something misconfigured?");
+                    err.printStackTrace();
+                    return;
+
+                }
+            }
+        }
+    }
+
     public double getDisplayYCoordinate() {
         double hostY = hostEntity.getBoundingBox().getMaxY();
         double offset = OofTracker.getConfiguration().getOrElse(ConfigKeys.HEALTH_BAR_OFFSET, 0.3d);
         return hostY + offset;
+    }
+
+    /** @return true if the host entity's location has changed since the last check. */
+    public boolean checkAndUpdateLastLocation() {
+        Location hL = hostEntity.getLocation();
+
+        if(lastLocation.equals(hL)) {
+            lastLocation = new Location(hostEntity.getWorld(), hL.getX(), hL.getY(), hL.getZ(), hL.getYaw(), hL.getPitch());
+            return true;
+        }
+        return false;
     }
 
 

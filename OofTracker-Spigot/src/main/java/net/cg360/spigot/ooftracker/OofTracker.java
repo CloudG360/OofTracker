@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 public final class OofTracker extends JavaPlugin implements Listener {
 
     private static OofTracker oofTracker = null;
+    private static boolean isRunning = false;
 
     private DamageStackManager damageStackManager;
     private HealthBarManager healthBarManager;
@@ -33,6 +34,7 @@ public final class OofTracker extends JavaPlugin implements Listener {
 
         try {
             oofTracker = this;
+            isRunning = true;
 
             loadConfiguration();
 
@@ -107,8 +109,14 @@ public final class OofTracker extends JavaPlugin implements Listener {
     }
 
 
+    @Override
+    public void onDisable() {
+        isRunning = false;
+    }
+
     public static OofTracker get() { return oofTracker; }
     public static Logger getLog() { return get().getLogger(); }
+    public static boolean isRunning() { return isRunning; }
 
     public static DamageStackManager getDamageStackManager() { return get().damageStackManager; }
     public static HealthBarManager getHealthBarManager() { return get().healthBarManager; }

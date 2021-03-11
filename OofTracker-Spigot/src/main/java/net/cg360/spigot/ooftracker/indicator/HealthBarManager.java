@@ -8,6 +8,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.HashMap;
 
@@ -21,6 +22,16 @@ public class HealthBarManager implements Listener {
     public HealthBarManager() {
         this.healthbars = new HashMap<>();
         this.lastDamageMillis = new HashMap<>();
+
+        OofTracker.get().getServer().getScheduler().scheduleSyncRepeatingTask(OofTracker.get(), () -> {
+
+            if(OofTracker.isRunning()) {
+                for (LivingEntityHealthBar hb : healthbars.values()) {
+                    hb.updatePositionAndVelocity();
+                }
+            }
+
+        }, 1, 1);
     }
 
     /**
@@ -75,7 +86,7 @@ public class HealthBarManager implements Listener {
 
                 LivingEntityHealthBar health = this.healthbars.get(entityID); // If this fails, hOW??
                 health.visible = true; // Set visible and update.
-                health.update();
+                health.updateDisplay();
 
                 OofTracker.get().getServer().getScheduler().scheduleSyncDelayedTask(OofTracker.get(), () -> {
 
@@ -84,7 +95,7 @@ public class HealthBarManager implements Listener {
 
                         if(hb != null) { // Stops any pesky NPEs if they do somehow happen
                             hb.visible = false; // Set invisible and update.
-                            hb.update();
+                            hb.updateDisplay();
                         }
                     }
 
@@ -101,12 +112,11 @@ public class HealthBarManager implements Listener {
         if(healthbars.containsKey(entityID)) {
             LivingEntityHealthBar hb = healthbars.get(entityID);
             hb.visible = false;
-            hb.update();
+            hb.updateDisplay();
 
             healthbars.remove(entityID);
         }
     }
-
 
     /** @return the primary instance of the HealthBarManager. */
     public static HealthBarManager get(){
