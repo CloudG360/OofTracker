@@ -3,7 +3,6 @@ package net.cg360.spigot.ooftracker.cause;
 import net.cg360.nsapi.commons.data.keyvalue.Key;
 import net.cg360.nsapi.commons.id.Namespace;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 public class TraceKeys {

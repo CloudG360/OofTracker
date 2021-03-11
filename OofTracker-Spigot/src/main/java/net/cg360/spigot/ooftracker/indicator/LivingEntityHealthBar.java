@@ -3,10 +3,6 @@ package net.cg360.spigot.ooftracker.indicator;
 import net.cg360.spigot.ooftracker.ConfigKeys;
 import net.cg360.spigot.ooftracker.OofTracker;
 import net.cg360.spigot.ooftracker.nms.NMS;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
@@ -15,7 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -81,8 +76,8 @@ public class LivingEntityHealthBar {
                             // Copy host entity's motion and follow.
                             Vector motion = hostEntity.getVelocity();
                             double dX = MathHelper.a(motion.getX(), -3.9D, 3.9D) * 8000D; // I think this is a clamping function + multiply?
-                            double dY = MathHelper.a(motion.getY(), -3.9D, 3.9D) * 8000D;;
-                            double dZ = MathHelper.a(motion.getZ(), -3.9D, 3.9D) * 8000D;;
+                            double dY = MathHelper.a(motion.getY(), -3.9D, 3.9D) * 8000D;
+                            double dZ = MathHelper.a(motion.getZ(), -3.9D, 3.9D) * 8000D;
                             NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "g", (int) dX); // Velocity X
                             NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "h", (int) dY); // Location Y
                             NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "i", (int) dZ); // Location Z
