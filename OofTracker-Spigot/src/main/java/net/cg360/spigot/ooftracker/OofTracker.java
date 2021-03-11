@@ -94,7 +94,7 @@ public final class OofTracker extends JavaPlugin implements Listener {
 
                     .set(ConfigKeys.HEALTH_BAR_VIEW_DISTANCE, config.getDouble(ConfigKeys.HEALTH_BAR_VIEW_DISTANCE.get(), 20d))
                     .set(ConfigKeys.HEALTH_BAR_VIEW_TICKS, config.getInt(ConfigKeys.HEALTH_BAR_VIEW_TICKS.get(), 400))
-                    .set(ConfigKeys.HEALTH_BAR_OFFSET, config.getDouble(ConfigKeys.HEALTH_BAR_OFFSET.get(), 0.2d))
+                    .set(ConfigKeys.HEALTH_BAR_OFFSET, config.getDouble(ConfigKeys.HEALTH_BAR_OFFSET.get(), 0.3d))
             ;
 
             return true;

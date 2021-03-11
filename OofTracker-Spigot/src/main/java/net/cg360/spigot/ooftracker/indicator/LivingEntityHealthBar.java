@@ -11,11 +11,14 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
 public class LivingEntityHealthBar {
+
+    private static final DecimalFormat HEALTH_FORMAT = new DecimalFormat("0.0");
 
     protected LivingEntity hostEntity;
     protected ArrayList<Player> visibleToPlayers;
@@ -24,6 +27,7 @@ public class LivingEntityHealthBar {
     protected UUID fakeEntityUUID;
 
     protected boolean visible;
+
 
     // Should only be instantiated from the HealthBarManager
     protected LivingEntityHealthBar(LivingEntity host) {
@@ -35,6 +39,8 @@ public class LivingEntityHealthBar {
 
         this.visible = false;
     }
+
+
 
     public void update() {
         double maxDistance = OofTracker.getConfiguration().getOrElse(ConfigKeys.HEALTH_BAR_VIEW_DISTANCE, 20d);
@@ -140,7 +146,7 @@ public class LivingEntityHealthBar {
 
     public double getDisplayYCoordinate() {
         double hostY = hostEntity.getBoundingBox().getMaxY();
-        double offset = OofTracker.getConfiguration().getOrElse(ConfigKeys.HEALTH_BAR_OFFSET, 0.2d);
+        double offset = OofTracker.getConfiguration().getOrElse(ConfigKeys.HEALTH_BAR_OFFSET, 0.3d);
         return hostY + offset;
     }
 
