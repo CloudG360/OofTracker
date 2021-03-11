@@ -92,13 +92,10 @@ public class LivingEntityHealthBar {
                             NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "f", hostEntity.getLocation().getZ()); // Location Z
 
                             // Copy host entity's motion and follow.
-                            Vector motion = hostEntity.getVelocity();
-                            double dX = MathHelper.a(motion.getX(), -3.9D, 3.9D) * 8000D; // I think this is a clamping function + multiply?
-                            double dY = MathHelper.a(motion.getY(), -3.9D, 3.9D) * 8000D;
-                            double dZ = MathHelper.a(motion.getZ(), -3.9D, 3.9D) * 8000D;
-                            NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "g", (int) dX); // Velocity X
-                            NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "h", (int) dY); // Location Y
-                            NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "i", (int) dZ); // Location Z
+                            int[] velocity = calculateNetworkVelocity(hostEntity.getVelocity());
+                            NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "g", velocity[0]); // Velocity X
+                            NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "h", velocity[1]); // Location Y
+                            NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "i", velocity[2]); // Location Z
 
                             // Technically rotation doesn't matter but let's copy anyway.
                             int yaw = (int) (hostEntity.getLocation().getYaw() * 256.0F / 360.0F);
@@ -148,6 +145,16 @@ public class LivingEntityHealthBar {
         double hostY = hostEntity.getBoundingBox().getMaxY();
         double offset = OofTracker.getConfiguration().getOrElse(ConfigKeys.HEALTH_BAR_OFFSET, 0.3d);
         return hostY + offset;
+    }
+
+
+
+    /** @return 3 ints using the protocol's velocity format. */
+    public static int[] calculateNetworkVelocity(Vector motion) {
+        double dX = MathHelper.a(motion.getX(), -3.9D, 3.9D) * 8000D; // I think this is a clamping function + multiply?
+        double dY = MathHelper.a(motion.getY(), -3.9D, 3.9D) * 8000D;
+        double dZ = MathHelper.a(motion.getZ(), -3.9D, 3.9D) * 8000D;
+        return new int[]{ (int)dX, (int)dY, (int)dZ };
     }
 
     public static String getHealthText(double health) {
