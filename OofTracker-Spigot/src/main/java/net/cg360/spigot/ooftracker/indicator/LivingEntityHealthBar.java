@@ -81,7 +81,7 @@ public class LivingEntityHealthBar {
 
                             // Copy host entity's location and follow
                             NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "d", hostEntity.getLocation().getX()); // Location X
-                            NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "e", hostEntity.getLocation().getY()); // Location Y
+                            NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "e", getDisplayYCoordinate()); // Location Y (+ offset)
                             NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "f", hostEntity.getLocation().getZ()); // Location Z
 
                             // Copy host entity's motion and follow.
@@ -137,6 +137,11 @@ public class LivingEntityHealthBar {
         }
     }
 
+    public double getDisplayYCoordinate() {
+        double hostY = hostEntity.getBoundingBox().getMaxY();
+        double offset = OofTracker.getConfiguration().getOrElse(ConfigKeys.HEALTH_BAR_OFFSET, 0.2d);
+        return hostY + offset;
+    }
 
     public static String getHealthText(String health) {
         return new RawTextBuilder(health).setBold(true).setColor("red").toString();
