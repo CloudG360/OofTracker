@@ -3,6 +3,7 @@ package net.cg360.spigot.ooftracker.indicator;
 import net.cg360.spigot.ooftracker.ConfigKeys;
 import net.cg360.spigot.ooftracker.OofTracker;
 import net.cg360.spigot.ooftracker.nms.NMS;
+import net.cg360.spigot.ooftracker.nms.RawTextBuilder;
 import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
@@ -21,7 +22,6 @@ public class LivingEntityHealthBar {
 
     protected int fakeEntityID;
     protected UUID fakeEntityUUID;
-
 
     protected boolean visible;
 
@@ -56,7 +56,7 @@ public class LivingEntityHealthBar {
 
 
                         dataWatcher.register(new DataWatcherObject<>(0, DataWatcherRegistry.a), (byte) 0x20); // Is invisible
-                        dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f), Optional.ofNullable(IChatBaseComponent.ChatSerializer.b("{\"text\":\"Test Name\"}"))  ); // Custom name
+                        dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f),  Optional.ofNullable( IChatBaseComponent.ChatSerializer.b( getHealthText(String.valueOf(hostEntity.getHealth())) ) ) ); // Custom name
                         dataWatcher.register(new DataWatcherObject<>(3, DataWatcherRegistry.i), true); // Custom name visible
                         dataWatcher.register(new DataWatcherObject<>(14, DataWatcherRegistry.a), (byte) 0x10); // Set Marker
 
@@ -109,7 +109,7 @@ public class LivingEntityHealthBar {
 
 
                             dataWatcher.register(new DataWatcherObject<>(0, DataWatcherRegistry.a), (byte) 0x20); // Is invisible
-                            dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f), Optional.ofNullable(IChatBaseComponent.ChatSerializer.b("{\"text\":\"Test Name\"}"))  ); // Custom name
+                            dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f), Optional.ofNullable( IChatBaseComponent.ChatSerializer.b( getHealthText(String.valueOf(hostEntity.getHealth())) ) ) ); // Custom name
                             dataWatcher.register(new DataWatcherObject<>(3, DataWatcherRegistry.i), true); // Custom name visible
                             dataWatcher.register(new DataWatcherObject<>(14, DataWatcherRegistry.a), (byte) 0x10); // Set Marker
 
@@ -133,8 +133,12 @@ public class LivingEntityHealthBar {
                         }
                     }
                 }
-
             }
         }
+    }
+
+
+    public static String getHealthText(String health) {
+        return new RawTextBuilder(health).setBold(true).setColor("red").toString();
     }
 }
