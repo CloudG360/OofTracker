@@ -2,6 +2,7 @@ package net.cg360.spigot.ooftracker;
 
 import net.cg360.nsapi.commons.data.Settings;
 import net.cg360.spigot.ooftracker.command.CommandDebug;
+import net.cg360.spigot.ooftracker.indicator.HealthBarManager;
 import net.cg360.spigot.ooftracker.list.DamageStackManager;
 import net.cg360.spigot.ooftracker.processing.DamageProcessing;
 import net.cg360.spigot.ooftracker.processing.DeathBroadcastScope;
@@ -21,6 +22,7 @@ public final class OofTracker extends JavaPlugin implements Listener {
     private static OofTracker oofTracker = null;
 
     private DamageStackManager damageStackManager;
+    private HealthBarManager healthBarManager;
     private DamageProcessing damageProcessing;
 
     private YamlConfiguration configurationFile;
@@ -36,17 +38,20 @@ public final class OofTracker extends JavaPlugin implements Listener {
 
             // -- Set Managers --
             this.damageStackManager = new DamageStackManager();
+            this.healthBarManager = new HealthBarManager();
             this.damageProcessing = new DamageProcessing();
 
             this.damageStackManager.setAsPrimaryManager();
+            this.healthBarManager.setAsPrimaryManager();
 
 
             // -- Register DamageProcessors --
             this.damageProcessing.addDamageProcessor(new DPDefault());
             this.damageProcessing.addDamageProcessor(new DPDAttackedByEntity());
 
-            // -- Register DamageProcessing as Listener --
+            // -- Register listeners --
             this.getServer().getPluginManager().registerEvents(damageProcessing, this);
+            this.getServer().getPluginManager().registerEvents(healthBarManager, this);
 
 
             // -- Register Commands --
@@ -102,10 +107,12 @@ public final class OofTracker extends JavaPlugin implements Listener {
 
 
     public static OofTracker get() { return oofTracker; }
-
     public static Logger getLog() { return get().getLogger(); }
-    public static DamageProcessing getDamageProcessingManager() { return get().damageProcessing; }
+
     public static DamageStackManager getDamageStackManager() { return get().damageStackManager; }
+    public static HealthBarManager getHealthBarManager() { return get().healthBarManager; }
+    public static DamageProcessing getDamageProcessingManager() { return get().damageProcessing; }
+
     public static Settings getConfiguration() { return get().configuration; }
     public static YamlConfiguration getConfigurationFile() { return get().configurationFile; }
 }
