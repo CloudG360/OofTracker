@@ -50,6 +50,7 @@ public class LivingEntityHealthBar {
                     if ((!visible) || (distance > maxDistance)) { // Isn't visible or the distance is now to large, remove
                         PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(fakeEntityID);
                         cPlayer.getHandle().playerConnection.sendPacket(destroyPacket);
+                        visibleToPlayers.remove(p);
 
                     } else { // Still visible, may include a health update so send new meta.
                         DataWatcher dataWatcher = new DataWatcher(null);
