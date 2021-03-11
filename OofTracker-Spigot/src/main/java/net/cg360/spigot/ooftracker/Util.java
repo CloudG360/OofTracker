@@ -42,7 +42,16 @@ public class Util {
         return baseUUID;
     }
 
-    public static <T extends Enum<T>> T stringToEnum(Class<T> enumBase, String value) {
-        return Enum.valueOf(enumBase, value.toUpperCase());
+    public static <T extends Enum<T>> T stringToEnum(Class<T> enumBase, String value, T def) {
+        if(value == null) {
+            return def;
+        } else {
+            try {
+                return Enum.valueOf(enumBase, value.toUpperCase());
+            } catch (Exception err) {
+                OofTracker.getLog().warning(String.format("%s is not a valid enum!", value));
+                return def;
+            }
+        }
     }
 }
