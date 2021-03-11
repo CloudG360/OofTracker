@@ -10,14 +10,14 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.util.HashMap;
 
-public class HealthbarManager implements Listener {
+public class HealthBarManager implements Listener {
 
-    private static HealthbarManager primaryManager;
+    private static HealthBarManager primaryManager;
 
-    protected HashMap<Integer, LivingEntityHealthbar> healthbars; // OwnerID: Healthbar
+    protected HashMap<Integer, LivingEntityHealthBar> healthbars; // OwnerID: Healthbar
     protected HashMap<Integer, Long> lastDamageMillis;
 
-    public HealthbarManager () {
+    public HealthBarManager() {
         this.healthbars = new HashMap<>();
         this.lastDamageMillis = new HashMap<>();
     }
@@ -63,17 +63,17 @@ public class HealthbarManager implements Listener {
                 this.lastDamageMillis.put(entityID, currentMilli);
 
                 if (!healthbars.containsKey(entityID)) {
-                    healthbars.put(entityID, new LivingEntityHealthbar((LivingEntity) event.getEntity()) );
+                    healthbars.put(entityID, new LivingEntityHealthBar((LivingEntity) event.getEntity()) );
                 }
 
-                LivingEntityHealthbar health = this.healthbars.get(entityID); // If this fails, hOW??
+                LivingEntityHealthBar health = this.healthbars.get(entityID); // If this fails, hOW??
                 health.visible = true; // Set visible and update.
                 health.updateVisibility();
 
                 OofTracker.get().getServer().getScheduler().scheduleSyncDelayedTask(OofTracker.get(), () -> {
 
                     if(checkTicks(entityID)) {
-                        LivingEntityHealthbar hb = this.healthbars.get(entityID); // Shouldn't fail unless someone has messed with it >:(
+                        LivingEntityHealthBar hb = this.healthbars.get(entityID); // Shouldn't fail unless someone has messed with it >:(
                         hb.visible = false; // Set invisible and update.
                         hb.updateVisibility();
                     }
@@ -85,7 +85,7 @@ public class HealthbarManager implements Listener {
 
 
     /** @return the primary instance of the HealthBarManager. */
-    public static HealthbarManager get(){
+    public static HealthBarManager get(){
         return primaryManager;
     }
 

@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class LivingEntityHealthbar {
+public class LivingEntityHealthBar {
 
     protected LivingEntity hostEntity;
     protected ArrayList<Player> visibleToPlayers;
@@ -30,8 +30,8 @@ public class LivingEntityHealthbar {
 
     protected boolean visible;
 
-    // Should only be instantiated from the HealthbarManager
-    protected LivingEntityHealthbar(LivingEntity host) {
+    // Should only be instantiated from the HealthBarManager
+    protected LivingEntityHealthBar(LivingEntity host) {
         this.hostEntity = host;
         this.visibleToPlayers = new ArrayList<>();
 
