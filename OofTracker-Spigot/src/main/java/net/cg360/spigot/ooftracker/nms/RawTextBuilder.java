@@ -2,6 +2,8 @@ package net.cg360.spigot.ooftracker.nms;
 
 import java.util.ArrayList;
 
+//TODO: Move into commons.
+
 // Field names should use the JSON RawText names.
 public class RawTextBuilder {
 
@@ -84,11 +86,45 @@ public class RawTextBuilder {
     @Override
     public String toString() {
         StringBuilder jsonTextBuilder = new StringBuilder();
+        // Add a comma after every finished component. It'll be sorted at the end.
+        jsonTextBuilder.append("{");
 
         if(extra != null) {
+            jsonTextBuilder.append("[");
+            boolean isEmpty = true;
 
+            for(RawTextBuilder builder: extra) {
+
+                if(builder != null) {
+                    jsonTextBuilder.append(builder.toString()).append(",");
+                    isEmpty = false;
+                }
+            }
+
+            if(!isEmpty) jsonTextBuilder.deleteCharAt(jsonTextBuilder.length() - 1); // Delete last comma
+            jsonTextBuilder.append(",");
         }
 
-        return "{}";
+        if(text != null) jsonTextBuilder.append(String.format("\"text\":\"%s\"", text)).append(",");
+        if(color != null) jsonTextBuilder.append(String.format("\"color\":\"%s\"", color)).append(",");
+        if(font != null) jsonTextBuilder.append(String.format("\"font\":\"%s\"", font)).append(",");
+
+        if(bold != null) jsonTextBuilder.append(String.format("\"bold\":%s", bold)).append(",");
+        if(italic != null) jsonTextBuilder.append(String.format("\"italic\":%s", italic)).append(",");
+        if(underlined != null) jsonTextBuilder.append(String.format("\"underlined\":%s", underlined)).append(",");
+        if(strikethrough != null) jsonTextBuilder.append(String.format("\"strikethrough\":%s", strikethrough)).append(",");
+        if(obfuscated != null) jsonTextBuilder.append(String.format("\"bold\":%s", obfuscated)).append(",");
+
+        if(insertion != null) jsonTextBuilder.append(String.format("\"insertion\":\"%s\"", insertion)).append(",");
+
+
+
+        if(jsonTextBuilder.length() > 1) { // More than just the first bracket. Probably got a comma.
+            jsonTextBuilder.deleteCharAt(jsonTextBuilder.length() - 1);
+        }
+
+        jsonTextBuilder.append("}");
+
+        return jsonTextBuilder.toString();
     }
 }
