@@ -25,10 +25,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 //TODO: for when you wake up, send more stuff through death events
 //      Modern versions can handle instant respawns. You just handle setting drops + xp in death.
@@ -151,7 +148,7 @@ public class DamageProcessing implements Listener {
                 StringBuilder assistBuilder = new StringBuilder();
 
                 boolean lastSuccessful = false;
-                ArrayList<UUID> previousDamagers = new ArrayList<>();
+                ArrayList<Player> previousDamagers = new ArrayList<>();
 
                 while (!stack.isEmpty()) {
 
@@ -164,7 +161,7 @@ public class DamageProcessing implements Listener {
                     if(root instanceof Player) {
                         Player p = (Player) root;
 
-                        if(!previousDamagers.contains(p.getUniqueId())) {
+                        if(!previousDamagers.contains(p)) {
 
                             if (Util.check(ConfigKeys.PING_ON_KILL, true)) {
                                 p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
@@ -175,7 +172,7 @@ public class DamageProcessing implements Listener {
                                 lastSuccessful = true; // Only applies to shown names.
                             }
 
-                            previousDamagers.add(p.getUniqueId());
+                            previousDamagers.add(p);
                         }
                         continue;
                     }
@@ -199,11 +196,41 @@ public class DamageProcessing implements Listener {
                 }
 
 
-                //TODO: Add a config for boardcast scopes - "SERVER" (Server's world), "WORLD" (Victim's world), "PARTICIPANTS" (Killers + Victim)
                 OofTracker.getLog().info(text.getText());
-                for(Player player: OofTracker.get().getServer().getOnlinePlayers()) {
-                    player.spigot().sendMessage(text); // Send message anyway, edited or not.
+                Collection<? extends Player> recipientPlayers;  // Weird type cause of the SERVER scope.
+
+                // Select broadcast type with a switch.
+                // Sends the message as raw despite if it's been edited or not.
+                switch (OofTracker.getConfiguration().getOrElse(ConfigKeys.DEATH_BROADCAST_SCOPE, DeathBroadcastScope.SERVER)) {
+
+                    case WORLD:
+                        // Send to everyone in the world where the death occurred.
+                        recipientPlayers = e.getEntity().getWorld().getPlayers();
+                        break;
+
+                    case PARTICIPANTS:
+                        // Send to everyone in the world where the death occurred.
+                        previousDamagers.add(e.getEntity());
+                        recipientPlayers = previousDamagers;
+                        break;
+
+                    case NONE:
+                        // Empty, send to no one.
+                        recipientPlayers = new ArrayList<>();
+                        break;
+
+                    default: // Server is the default!
+                    case SERVER:
+                        // Send to everyone on the server
+                        recipientPlayers = OofTracker.get().getServer().getOnlinePlayers();
+                        break;
                 }
+
+                // Send message to whatever list is picked.
+                for (Player p: recipientPlayers) {
+                    p.spigot().sendMessage(text);
+                }
+
             }
         }
 
