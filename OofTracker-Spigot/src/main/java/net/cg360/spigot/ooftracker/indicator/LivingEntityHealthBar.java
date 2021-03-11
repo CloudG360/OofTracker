@@ -146,26 +146,43 @@ public class LivingEntityHealthBar {
 
     // If you find an entity movement event, PLEASE just use that. Running this every tick is stupid.
     public void updatePositionAndVelocity() {
+        Optional<Location> oldLoc = checkAndUpdateLastLocation();
 
-        if(checkAndUpdateLastLocation()) {
+
+        if(oldLoc.isPresent()) { // A movement has occured
+            Location oldLocation = oldLoc.get();
+
             for (Player player : visibleToPlayers) {
 
                 try {
-                    PacketPlayOutEntityTeleport packetTeleport = new PacketPlayOutEntityTeleport();
                     PacketPlayOutEntityVelocity packetVelocity = new PacketPlayOutEntityVelocity(fakeEntityID, new Vec3D(lastLocation.getX(), lastLocation.getY(), lastLocation.getZ()));
 
-                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "b", lastLocation.getX()); // Pos X
-                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "c", lastLocation.getY()); // Pos Y
-                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "d", lastLocation.getZ()); // Pos Z
+                    if(oldLocation.distance(lastLocation) > 8) { // Protocol insists changes of > 8 must teleport
+                        PacketPlayOutEntityTeleport packetTeleport = new PacketPlayOutEntityTeleport();
 
-                    int yaw = (int) (lastLocation.getYaw() * 256.0F / 360.0F);
-                    int pitch = (int) (lastLocation.getPitch() * 256.0F / 360.0F);
-                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "e", (byte) yaw); // Y rot (Yaw)
-                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "f", (byte) pitch); // X rot (Pitch)
+                        NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "b", lastLocation.getX()); // Pos X
+                        NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "c", lastLocation.getY()); // Pos Y
+                        NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "d", lastLocation.getZ()); // Pos Z
 
-                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "g", false); //On Ground?
+                        int yaw = (int) (lastLocation.getYaw() * 256.0F / 360.0F);
+                        int pitch = (int) (lastLocation.getPitch() * 256.0F / 360.0F);
+                        NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "e", (byte) yaw); // Y rot (Yaw)
+                        NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "f", (byte) pitch); // X rot (Pitch)
 
-                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packetTeleport);
+                        NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "g", false); //On Ground?
+
+                        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packetTeleport);
+
+                    } else {
+                        short deltaX = (short) ((lastLocation.getX() * 32 - oldLocation.getX() * 32) * 128);
+                        short deltaY = (short) ((lastLocation.getY() * 32 - oldLocation.getY() * 32) * 128);
+                        short deltaZ = (short) ((lastLocation.getZ() * 32 - oldLocation.getZ() * 32) * 128);
+                        PacketPlayOutEntity.PacketPlayOutRelEntityMove packetMove =
+                                new PacketPlayOutEntity.PacketPlayOutRelEntityMove(fakeEntityID, deltaX, deltaY, deltaZ, false); // Love how hidden this is.
+
+                        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packetMove);
+                    }
+
                     ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packetVelocity);
 
                 } catch (NoSuchFieldException err) {
@@ -189,15 +206,16 @@ public class LivingEntityHealthBar {
         return hostY + offset;
     }
 
-    /** @return true if the host entity's location has changed since the last check. */
-    public boolean checkAndUpdateLastLocation() {
+    /** @return old location if there has been a change. */
+    public Optional<Location> checkAndUpdateLastLocation() {
         Location hL = hostEntity.getLocation();
 
         if(!lastLocation.equals(hL)) { // Has location changed?
+            Location oldLocation = lastLocation;
             lastLocation = new Location(hostEntity.getWorld(), hL.getX(), hL.getY(), hL.getZ(), hL.getYaw(), hL.getPitch());
-            return true;
+            return Optional.of(oldLocation);
         }
-        return false;
+        return Optional.empty();
     }
 
 
