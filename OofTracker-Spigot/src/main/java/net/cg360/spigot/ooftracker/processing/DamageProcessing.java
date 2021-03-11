@@ -27,9 +27,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.util.*;
 
-//TODO: for when you wake up, send more stuff through death events
-//      Modern versions can handle instant respawns. You just handle setting drops + xp in death.
-
 public class DamageProcessing implements Listener {
 
     protected List<UUID> customDamageCalls; // Used to block events caused by custom damage.
