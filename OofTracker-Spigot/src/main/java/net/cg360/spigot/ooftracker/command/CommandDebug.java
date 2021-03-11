@@ -2,6 +2,9 @@ package net.cg360.spigot.ooftracker.command;
 
 import net.cg360.spigot.ooftracker.OofTracker;
 import net.cg360.spigot.ooftracker.nms.NMS;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,6 +17,7 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class CommandDebug implements CommandExecutor {
@@ -27,7 +31,6 @@ public class CommandDebug implements CommandExecutor {
 
             CraftPlayer cPlayer = (CraftPlayer) sender;
             PacketPlayOutSpawnEntityLiving addPacket = new PacketPlayOutSpawnEntityLiving(); // An armour stand is apparently living??
-            PacketPlayOutEntityMetadata metaPacket = new PacketPlayOutEntityMetadata();
 
             try {
 
@@ -63,20 +66,35 @@ public class CommandDebug implements CommandExecutor {
 
                 // -- UPDATE ENTITY META --
 
-                NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "a", fakeEntityID); // Entity ID
 
-                NBTTagCompound compoundTag = new NBTTagCompound();
-                compoundTag.setBoolean("Invisible", true);
-                compoundTag.setBoolean("Marker", true);
-                compoundTag.setString("CustomName", "Ooga Booga");
-                compoundTag.setBoolean("CustomNameVisible", true);
+                DataWatcher dataWatcher = new DataWatcher(null);
 
-                DataWatcherObject<NBTTagCompound> tagWatcher = new DataWatcherObject<>(14, DataWatcherRegistry.p);
-                DataWatcher.Item<NBTTagCompound> watcherItem = new DataWatcher.Item<>(tagWatcher, compoundTag);
+                String customNameJson = ComponentSerializer.toString( new ComponentBuilder("EEEE").color(ChatColor.BLUE).bold(true));
 
-                List<DataWatcher.Item<?>> itemList = new ArrayList<>();
-                itemList.add(watcherItem);
-                NMS.setClassField(PacketPlayOutEntityMetadata.class, metaPacket, "b", itemList);
+
+                dataWatcher.register(new DataWatcherObject<>(0, DataWatcherRegistry.a), (byte) 0x20); // Is invisible
+                dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f), Optional.ofNullable(IChatBaseComponent.ChatSerializer.b(customNameJson)) ); // Custom name
+                dataWatcher.register(new DataWatcherObject<>(3, DataWatcherRegistry.i), true); // Custom name visible
+                dataWatcher.register(new DataWatcherObject<>(14, DataWatcherRegistry.a), (byte) 0x10); // Set Marker
+
+                PacketPlayOutEntityMetadata metaPacket = new PacketPlayOutEntityMetadata(fakeEntityID, dataWatcher, true);
+
+
+                            /*
+                            NBTTagCompound compoundTag = new NBTTagCompound();
+                            compoundTag.setBoolean("Invisible", true);
+                            compoundTag.setBoolean("Marker", true);
+                            compoundTag.setString("CustomName", "Ooga Booga");
+                            compoundTag.setBoolean("CustomNameVisible", true);
+
+                            DataWatcherObject<NBTTagCompound> tagWatcher = new DataWatcherObject<>(14, DataWatcherRegistry.p);
+                            DataWatcher.Item<NBTTagCompound> watcherItem = new DataWatcher.Item<>(tagWatcher, compoundTag);
+                            NMS.setClassField(PacketPlayOutEntityMetadata.class, metaPacket, "b", itemList);
+                             */
+
+
+
+                cPlayer.getHandle().playerConnection.sendPacket(addPacket);
 
                 cPlayer.getHandle().playerConnection.sendPacket(addPacket);
                 cPlayer.getHandle().playerConnection.sendPacket(metaPacket);
