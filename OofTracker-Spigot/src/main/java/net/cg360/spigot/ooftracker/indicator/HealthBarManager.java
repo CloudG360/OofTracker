@@ -35,7 +35,7 @@ public class HealthBarManager implements Listener {
 
 
 
-    protected boolean checkTicks(int entityID) {
+    protected boolean checkRemovalTicks(int entityID) {
         long currentMilli = System.currentTimeMillis();  // Get current time now so it's consistent if needed.
 
         // would be true if the entity died or something.
@@ -46,7 +46,7 @@ public class HealthBarManager implements Listener {
 
             // TRUE:    Delta is out of the bounds, remove the healthbar.
             // FALSE:   Delta is in meaning a more recent damage occurred. Keep healthbar.
-            return delta < maxConfigDelta;
+            return delta >= maxConfigDelta;
 
         } else {
             return true;
@@ -79,10 +79,10 @@ public class HealthBarManager implements Listener {
 
                 OofTracker.get().getServer().getScheduler().scheduleSyncDelayedTask(OofTracker.get(), () -> {
 
-                    if(checkTicks(entityID)) {
+                    if(checkRemovalTicks(entityID)) {
                         LivingEntityHealthBar hb = this.healthbars.get(entityID); // Shouldn't fail unless someone has messed with it >:(
 
-                        if(hb != null) { // Stops null pointers for any left-over damage
+                        if(hb != null) { // Stops any pesky NPEs if they do somehow happen
                             hb.visible = false; // Set invisible and update.
                             hb.update();
                         }
