@@ -109,21 +109,6 @@ public class LivingEntityHealthbar {
 
                             PacketPlayOutEntityMetadata metaPacket = new PacketPlayOutEntityMetadata(fakeEntityID, dataWatcher, true);
 
-
-                            /*
-                            NBTTagCompound compoundTag = new NBTTagCompound();
-                            compoundTag.setBoolean("Invisible", true);
-                            compoundTag.setBoolean("Marker", true);
-                            compoundTag.setString("CustomName", "Ooga Booga");
-                            compoundTag.setBoolean("CustomNameVisible", true);
-
-                            DataWatcherObject<NBTTagCompound> tagWatcher = new DataWatcherObject<>(14, DataWatcherRegistry.p);
-                            DataWatcher.Item<NBTTagCompound> watcherItem = new DataWatcher.Item<>(tagWatcher, compoundTag);
-                            NMS.setClassField(PacketPlayOutEntityMetadata.class, metaPacket, "b", itemList);
-                             */
-
-
-
                             cPlayer.getHandle().playerConnection.sendPacket(addPacket);
                             cPlayer.getHandle().playerConnection.sendPacket(metaPacket);
 
