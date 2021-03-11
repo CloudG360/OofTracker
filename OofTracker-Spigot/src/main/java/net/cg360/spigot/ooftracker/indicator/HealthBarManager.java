@@ -71,6 +71,7 @@ public class HealthBarManager implements Listener {
     public void onEntityDamage(EntityDamageEvent event) {
 
         if(event.getEntity() instanceof LivingEntity) {
+            LivingEntity living = (LivingEntity) event.getEntity();
 
             // Only create/update health bars if enabled (distance > 0)
             if(OofTracker.getConfiguration().getOrElse(ConfigKeys.HEALTH_BAR_VIEW_DISTANCE, 20d) > 0) {
@@ -86,7 +87,7 @@ public class HealthBarManager implements Listener {
 
                 LivingEntityHealthBar health = this.healthbars.get(entityID); // If this fails, hOW??
                 health.visible = true; // Set visible and update.
-                health.updateDisplay();
+                health.updateDisplay(living.getHealth() - event.getFinalDamage());
 
                 OofTracker.get().getServer().getScheduler().scheduleSyncDelayedTask(OofTracker.get(), () -> {
 
@@ -95,7 +96,7 @@ public class HealthBarManager implements Listener {
 
                         if(hb != null) { // Stops any pesky NPEs if they do somehow happen
                             hb.visible = false; // Set invisible and update.
-                            hb.updateDisplay();
+                            hb.updateDisplay(living.getHealth() - event.getFinalDamage());
                         }
                     }
 
@@ -112,7 +113,7 @@ public class HealthBarManager implements Listener {
         if(healthbars.containsKey(entityID)) {
             LivingEntityHealthBar hb = healthbars.get(entityID);
             hb.visible = false;
-            hb.updateDisplay();
+            hb.updateDisplay(0);
 
             healthbars.remove(entityID);
         }

@@ -45,7 +45,7 @@ public class LivingEntityHealthBar {
 
 
 
-    public void updateDisplay() {
+    public void updateDisplay(double health) {
         double maxDistance = OofTracker.getConfiguration().getOrElse(ConfigKeys.HEALTH_BAR_VIEW_DISTANCE, 20d);
 
         for(Player p: hostEntity.getWorld().getPlayers()) {
@@ -66,7 +66,7 @@ public class LivingEntityHealthBar {
 
 
                         dataWatcher.register(new DataWatcherObject<>(0, DataWatcherRegistry.a), (byte) 0x20); // Is invisible
-                        dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f),  Optional.ofNullable( IChatBaseComponent.ChatSerializer.b( getHealthText( hostEntity.getHealth() ) ) ) ); // Custom name
+                        dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f),  Optional.ofNullable( IChatBaseComponent.ChatSerializer.b( getHealthText( health ) ) ) ); // Custom name
                         dataWatcher.register(new DataWatcherObject<>(3, DataWatcherRegistry.i), true); // Custom name visible
                         dataWatcher.register(new DataWatcherObject<>(14, DataWatcherRegistry.a), (byte) 0x10); // Set Marker
 
@@ -116,7 +116,7 @@ public class LivingEntityHealthBar {
 
 
                             dataWatcher.register(new DataWatcherObject<>(0, DataWatcherRegistry.a), (byte) 0x20); // Is invisible
-                            dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f), Optional.ofNullable( IChatBaseComponent.ChatSerializer.b( getHealthText( hostEntity.getHealth() ) ) ) ); // Custom name
+                            dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f), Optional.ofNullable( IChatBaseComponent.ChatSerializer.b( getHealthText( health ) ) ) ); // Custom name
                             dataWatcher.register(new DataWatcherObject<>(3, DataWatcherRegistry.i), true); // Custom name visible
                             dataWatcher.register(new DataWatcherObject<>(14, DataWatcherRegistry.a), (byte) 0x10); // Set Marker
 
