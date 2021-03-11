@@ -38,7 +38,7 @@ public class HealthBarManager implements Listener {
     protected boolean checkTicks(int entityID) {
         long currentMilli = System.currentTimeMillis();  // Get current time now so it's consistent if needed.
 
-        // would be false if the entity died or something.
+        // would be true if the entity died or something.
         if(lastDamageMillis.containsKey(entityID)) {
             long lastMilli = lastDamageMillis.get(entityID);
             long delta = currentMilli - lastMilli; // Difference between then and now.
@@ -49,7 +49,7 @@ public class HealthBarManager implements Listener {
             return delta < maxConfigDelta;
 
         } else {
-            return false;
+            return true;
         }
     }
 
