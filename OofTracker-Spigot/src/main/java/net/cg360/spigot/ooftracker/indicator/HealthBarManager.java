@@ -81,8 +81,11 @@ public class HealthBarManager implements Listener {
 
                     if(checkTicks(entityID)) {
                         LivingEntityHealthBar hb = this.healthbars.get(entityID); // Shouldn't fail unless someone has messed with it >:(
-                        hb.visible = false; // Set invisible and update.
-                        hb.update();
+
+                        if(hb != null) { // Stops null pointers for any left-over damage
+                            hb.visible = false; // Set invisible and update.
+                            hb.update();
+                        }
                     }
 
                 }, viewTicks + 1); // Ensure the delta will be past the max.
