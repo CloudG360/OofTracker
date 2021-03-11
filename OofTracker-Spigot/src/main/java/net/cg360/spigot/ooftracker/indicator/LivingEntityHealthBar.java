@@ -158,8 +158,10 @@ public class LivingEntityHealthBar {
                     NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "c", lastLocation.getY()); // Pos Y
                     NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "d", lastLocation.getZ()); // Pos Z
 
-                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "e", lastLocation.getYaw()); // Y rot (Yaw)
-                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "f", lastLocation.getPitch()); // X rot (Pitch)
+                    int yaw = (int) (lastLocation.getYaw() * 256.0F / 360.0F);
+                    int pitch = (int) (lastLocation.getPitch() * 256.0F / 360.0F);
+                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "e", (byte) yaw); // Y rot (Yaw)
+                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "f", (byte) pitch); // X rot (Pitch)
 
                     NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "g", false); //On Ground?
 
