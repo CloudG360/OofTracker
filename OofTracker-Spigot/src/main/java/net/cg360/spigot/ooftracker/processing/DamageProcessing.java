@@ -6,6 +6,7 @@ import net.cg360.spigot.ooftracker.OofTracker;
 import net.cg360.spigot.ooftracker.Util;
 import net.cg360.spigot.ooftracker.cause.DamageTrace;
 import net.cg360.spigot.ooftracker.cause.TraceKeys;
+import net.cg360.spigot.ooftracker.event.DamageStackDeathFlushEvent;
 import net.cg360.spigot.ooftracker.list.DamageStack;
 import net.cg360.spigot.ooftracker.list.DamageStackManager;
 import net.md_5.bungee.api.ChatColor;
@@ -206,11 +207,15 @@ public class DamageProcessing implements Listener {
             }
         }
 
-        if(Util.check(ConfigKeys.LIST_CLEAR_ON_DEATH, true)) {
-            DamageStackManager.get().getDamageList(event.getEntity()).clear();
+        DamageStackDeathFlushEvent stackFlushEvent = new DamageStackDeathFlushEvent(
+                event.getEntity(),
+                DamageStackManager.get().getDamageList(event.getEntity())
+        );
 
-            //TODO: Broadcast list clear event
-        }
+        stackFlushEvent.setCancelled(!Util.check(ConfigKeys.LIST_CLEAR_ON_DEATH, true)); // Cancel if list clearing is disabled.
+        OofTracker.get().getServer().getPluginManager().callEvent(stackFlushEvent);
+
+        if(stackFlushEvent.isCancelled()) { DamageStackManager.get().getDamageList(event.getEntity()).clear(); }
     }
 
 
