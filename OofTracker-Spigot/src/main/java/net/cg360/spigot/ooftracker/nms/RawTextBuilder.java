@@ -44,8 +44,9 @@ public class RawTextBuilder {
      * Adds a component to the Raw Text's "extra" tag. Creates a list
      * if one is not already present.
      * @param extraComponent the component to add.
+     * @return this for chaining
      */
-    public void append(RawTextBuilder extraComponent) {
+    public RawTextBuilder append(RawTextBuilder extraComponent) {
 
         if(this.extra == null) {
             this.extra = new ArrayList<>();
@@ -53,6 +54,7 @@ public class RawTextBuilder {
         }
 
         this.extra.add(extraComponent);
+        return this;
     }
 
 
@@ -70,16 +72,16 @@ public class RawTextBuilder {
 
 
 
-    public void setExtra(ArrayList<RawTextBuilder> extra) { this.extra = extra; }
-    public void setText(String text) { this.text = text; }
-    public void setColor(String color) { this.color = color; }
-    public void setFont(String font) { this.font = font; }
-    public void setBold(Boolean bold) { this.bold = bold; }
-    public void setItalic(Boolean italic) { this.italic = italic; }
-    public void setUnderlined(Boolean underlined) { this.underlined = underlined; }
-    public void setStrikethrough(Boolean strikethrough) { this.strikethrough = strikethrough; }
-    public void setObfuscated(Boolean obfuscated) { this.obfuscated = obfuscated; }
-    public void setInsertion(String insertion) { this.insertion = insertion; }
+    public RawTextBuilder setExtra(ArrayList<RawTextBuilder> extra) { this.extra = extra; return this; }
+    public RawTextBuilder setText(String text) { this.text = text; return this; }
+    public RawTextBuilder setColor(String color) { this.color = color; return this; }
+    public RawTextBuilder setFont(String font) { this.font = font; return this; }
+    public RawTextBuilder setBold(Boolean bold) { this.bold = bold; return this; }
+    public RawTextBuilder setItalic(Boolean italic) { this.italic = italic; return this; }
+    public RawTextBuilder setUnderlined(Boolean underlined) { this.underlined = underlined; return this; }
+    public RawTextBuilder setStrikethrough(Boolean strikethrough) { this.strikethrough = strikethrough; return this; }
+    public RawTextBuilder setObfuscated(Boolean obfuscated) { this.obfuscated = obfuscated; return this; }
+    public RawTextBuilder setInsertion(String insertion) { this.insertion = insertion; return this; }
 
 
     /** @return a built RawText JSON string. */
