@@ -191,7 +191,7 @@ public class LivingEntityHealthBar {
     public boolean checkAndUpdateLastLocation() {
         Location hL = hostEntity.getLocation();
 
-        if(lastLocation.equals(hL)) {
+        if(!lastLocation.equals(hL)) { // Has location changed?
             lastLocation = new Location(hostEntity.getWorld(), hL.getX(), hL.getY(), hL.getZ(), hL.getYaw(), hL.getPitch());
             return true;
         }
