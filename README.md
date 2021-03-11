@@ -5,15 +5,17 @@
 
 **Oof Tracker** creates _Damage Stacks_ for each entity that is damaged on the server (or queried via the API) which keeps a track of the properties for each damage event that occurs. This allows plugins using it to check for **Assist Kills** from other players easily or even award bonus points for how much damage a player has taken vs how long they have survived!
 
-The Damage Stacks are populated with **Damage Traces** which are accessible in the API via two forms of interface. Damage data within these traces can be accessed by generically using keys against the raw data, or by utilising subclasses that provide methods to easily read data. Damage Traces can hold different data depending on the type of damage that is dealt.
+The Damage Stacks are populated with **Damage Traces** which are accessible in the API via two forms of interface. Damage data within these traces can be accessed by generically using typed keys against the raw data, or by utilising subclasses that provide methods to easily read data. Damage Traces can hold different data depending on the type of damage that is dealt.
 
 ## Non-API features:
 
 - [ ] Deaths Plus
   - [x] Assist Tag (on Vanilla + Custom death messages)
   - [ ] Custom Death Messages
-  - [ ] Ping on kill/assist
-- [ ] Instant Respawning.
+  - [x] Ping on kill/assist.
+- [ ] Visual Health-bars
+  - [ ] A variety of options? :O
+- [ ] Damage indicators (Particle-like Text appearing after each hit)
 - [ ] Extra entity damage events
 - [ ] In-Chat log viewing.
   - Post PvP, this may be nice to check.
