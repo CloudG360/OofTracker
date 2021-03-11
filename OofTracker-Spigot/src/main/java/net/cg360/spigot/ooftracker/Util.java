@@ -41,4 +41,8 @@ public class Util {
 
         return baseUUID;
     }
+
+    public static <T extends Enum<T>> T stringToEnum(Class<T> enumBase, String value) {
+        return Enum.valueOf(enumBase, value.toUpperCase());
+    }
 }
