@@ -52,4 +52,7 @@ public final class ConfigKeys {
     // How long should a healthbar be visible for after damage?
     public static final Key<Integer> HEALTH_BAR_VIEW_TICKS = new Key<>("health-view-ticks"); // default: 400
 
+    // How high above an entity's head should the health indicator be rendered?
+    public static final Key<Double> HEALTH_BAR_OFFSET = new Key<>("health-offset"); // default: 0.2
+
 }
