@@ -56,7 +56,7 @@ public class LivingEntityHealthBar {
 
 
                         dataWatcher.register(new DataWatcherObject<>(0, DataWatcherRegistry.a), (byte) 0x20); // Is invisible
-                        dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f),  Optional.ofNullable( IChatBaseComponent.ChatSerializer.b( getHealthText(String.valueOf(hostEntity.getHealth())) ) ) ); // Custom name
+                        dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f),  Optional.ofNullable( IChatBaseComponent.ChatSerializer.b( getHealthText( hostEntity.getHealth() ) ) ) ); // Custom name
                         dataWatcher.register(new DataWatcherObject<>(3, DataWatcherRegistry.i), true); // Custom name visible
                         dataWatcher.register(new DataWatcherObject<>(14, DataWatcherRegistry.a), (byte) 0x10); // Set Marker
 
@@ -109,7 +109,7 @@ public class LivingEntityHealthBar {
 
 
                             dataWatcher.register(new DataWatcherObject<>(0, DataWatcherRegistry.a), (byte) 0x20); // Is invisible
-                            dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f), Optional.ofNullable( IChatBaseComponent.ChatSerializer.b( getHealthText(String.valueOf(hostEntity.getHealth())) ) ) ); // Custom name
+                            dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f), Optional.ofNullable( IChatBaseComponent.ChatSerializer.b( getHealthText( hostEntity.getHealth() ) ) ) ); // Custom name
                             dataWatcher.register(new DataWatcherObject<>(3, DataWatcherRegistry.i), true); // Custom name visible
                             dataWatcher.register(new DataWatcherObject<>(14, DataWatcherRegistry.a), (byte) 0x10); // Set Marker
 
@@ -143,7 +143,7 @@ public class LivingEntityHealthBar {
         return hostY + offset;
     }
 
-    public static String getHealthText(String health) {
-        return new RawTextBuilder(health).setBold(true).setColor("red").toString();
+    public static String getHealthText(double health) {
+        return new RawTextBuilder(String.valueOf(Math.ceil(health))).setBold(true).setColor("red").toString();
     }
 }
