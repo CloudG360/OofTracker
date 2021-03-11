@@ -46,7 +46,10 @@ public final class ConfigKeys {
 
     // -- Indicators --
 
-    // Are custom death messages enabled?
+    // What distance are healthbars visible from. Use 0 or less to hide.
     public static final Key<Double> HEALTH_BAR_VIEW_DISTANCE = new Key<>("health-view-distance"); // default: 20
+
+    // How long should a healthbar be visible for after damage?
+    public static final Key<Integer> HEALTH_BAR_VIEW_TICKS = new Key<>("health-view-ticks"); // default: 400
 
 }

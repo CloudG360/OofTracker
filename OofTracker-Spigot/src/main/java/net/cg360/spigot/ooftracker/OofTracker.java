@@ -88,6 +88,7 @@ public final class OofTracker extends JavaPlugin implements Listener {
                     .set(ConfigKeys.DEATH_BROADCAST_SCOPE, Util.stringToEnum(DeathBroadcastScope.class, config.getString(ConfigKeys.DEATH_BROADCAST_SCOPE.get()), DeathBroadcastScope.SERVER))
 
                     .set(ConfigKeys.HEALTH_BAR_VIEW_DISTANCE, config.getDouble(ConfigKeys.HEALTH_BAR_VIEW_DISTANCE.get(), 20d))
+                    .set(ConfigKeys.HEALTH_BAR_VIEW_TICKS, config.getInt(ConfigKeys.HEALTH_BAR_VIEW_TICKS.get(), 400))
             ;
 
             return true;
