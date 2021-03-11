@@ -4,6 +4,7 @@ import net.cg360.nsapi.commons.data.Settings;
 import net.cg360.spigot.ooftracker.command.CommandDebug;
 import net.cg360.spigot.ooftracker.list.DamageStackManager;
 import net.cg360.spigot.ooftracker.processing.DamageProcessing;
+import net.cg360.spigot.ooftracker.processing.DeathBroadcastScope;
 import net.cg360.spigot.ooftracker.processing.builtin.DPDAttackedByEntity;
 import net.cg360.spigot.ooftracker.processing.builtin.DPDefault;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -84,6 +85,7 @@ public final class OofTracker extends JavaPlugin implements Listener {
                     .set(ConfigKeys.ASSIST_TAGS_ENABLED, config.getBoolean(ConfigKeys.ASSIST_TAGS_ENABLED.get(), true))
                     .set(ConfigKeys.KILLER_IN_ASSIST_TAG, config.getBoolean(ConfigKeys.KILLER_IN_ASSIST_TAG.get(), true))
                     .set(ConfigKeys.PING_ON_KILL, config.getBoolean(ConfigKeys.PING_ON_KILL.get(), true))
+                    .set(ConfigKeys.DEATH_BROADCAST_SCOPE, Util.stringToEnum(DeathBroadcastScope.class, config.getString(ConfigKeys.DEATH_BROADCAST_SCOPE.get()), DeathBroadcastScope.SERVER))
 
                     .set(ConfigKeys.HEALTH_BAR_VIEW_DISTANCE, config.getDouble(ConfigKeys.HEALTH_BAR_VIEW_DISTANCE.get(), 20d))
             ;

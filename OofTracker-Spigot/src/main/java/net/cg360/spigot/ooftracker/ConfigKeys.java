@@ -1,6 +1,7 @@
 package net.cg360.spigot.ooftracker;
 
 import net.cg360.nsapi.commons.data.keyvalue.Key;
+import net.cg360.spigot.ooftracker.processing.DeathBroadcastScope;
 
 public final class ConfigKeys {
 
@@ -37,6 +38,9 @@ public final class ConfigKeys {
 
     // Do assists + killers broadcast an audible ping on kill?
     public static final Key<Boolean> PING_ON_KILL = new Key<>("ping-on-kill"); // default: true
+
+    // Do assists + killers broadcast an audible ping on kill?
+    public static final Key<DeathBroadcastScope> DEATH_BROADCAST_SCOPE = new Key<>("death-broadcast-scope"); // default: SERVER
 
 
 
