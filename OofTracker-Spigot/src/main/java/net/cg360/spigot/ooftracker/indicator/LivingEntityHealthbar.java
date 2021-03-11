@@ -101,11 +101,9 @@ public class LivingEntityHealthbar {
 
                             DataWatcher dataWatcher = new DataWatcher(null);
 
-                            String customNameJson = ComponentSerializer.toString( new ComponentBuilder("EEEE").color(ChatColor.BLUE).bold(true));
-
 
                             dataWatcher.register(new DataWatcherObject<>(0, DataWatcherRegistry.a), (byte) 0x20); // Is invisible
-                            dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f), Optional.ofNullable(IChatBaseComponent.ChatSerializer.b(customNameJson)) ); // Custom name
+                            dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f), Optional.ofNullable(IChatBaseComponent.ChatSerializer.b("{\"text\":\"Test Name\"}"))  ); // Custom name
                             dataWatcher.register(new DataWatcherObject<>(3, DataWatcherRegistry.i), true); // Custom name visible
                             dataWatcher.register(new DataWatcherObject<>(14, DataWatcherRegistry.a), (byte) 0x10); // Set Marker
 
