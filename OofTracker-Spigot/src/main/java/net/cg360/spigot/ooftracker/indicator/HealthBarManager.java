@@ -68,14 +68,14 @@ public class HealthBarManager implements Listener {
 
                 LivingEntityHealthBar health = this.healthbars.get(entityID); // If this fails, hOW??
                 health.visible = true; // Set visible and update.
-                health.updateVisibility();
+                health.update();
 
                 OofTracker.get().getServer().getScheduler().scheduleSyncDelayedTask(OofTracker.get(), () -> {
 
                     if(checkTicks(entityID)) {
                         LivingEntityHealthBar hb = this.healthbars.get(entityID); // Shouldn't fail unless someone has messed with it >:(
                         hb.visible = false; // Set invisible and update.
-                        hb.updateVisibility();
+                        hb.update();
                     }
 
                 }, viewTicks + 1); // Ensure the delta will be past the max.

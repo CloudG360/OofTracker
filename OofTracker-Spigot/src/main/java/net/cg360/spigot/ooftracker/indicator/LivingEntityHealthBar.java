@@ -36,28 +36,39 @@ public class LivingEntityHealthBar {
         this.visible = false;
     }
 
-    public void updateVisibility() {
+    public void update() {
         double maxDistance = OofTracker.getConfiguration().getOrElse(ConfigKeys.HEALTH_BAR_VIEW_DISTANCE, 20d);
 
         for(Player p: hostEntity.getWorld().getPlayers()) {
 
             if(p != hostEntity) { // Ensure the player, if they are the entity, are not visible.
                 double distance = p.getLocation().distance(hostEntity.getLocation());
+                CraftPlayer cPlayer = (CraftPlayer) p;
 
                 if(visibleToPlayers.contains(p)) {
 
                     if ((!visible) || (distance > maxDistance)) { // Isn't visible or the distance is now to large, remove
-                        visibleToPlayers.remove(p);
-                        CraftPlayer cPlayer = (CraftPlayer) p;
                         PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(fakeEntityID);
                         cPlayer.getHandle().playerConnection.sendPacket(destroyPacket);
+
+                    } else { // Still visible, may include a health update so send new meta.
+                        DataWatcher dataWatcher = new DataWatcher(null);
+
+
+                        dataWatcher.register(new DataWatcherObject<>(0, DataWatcherRegistry.a), (byte) 0x20); // Is invisible
+                        dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f), Optional.ofNullable(IChatBaseComponent.ChatSerializer.b("{\"text\":\"Test Name\"}"))  ); // Custom name
+                        dataWatcher.register(new DataWatcherObject<>(3, DataWatcherRegistry.i), true); // Custom name visible
+                        dataWatcher.register(new DataWatcherObject<>(14, DataWatcherRegistry.a), (byte) 0x10); // Set Marker
+
+                        PacketPlayOutEntityMetadata metaPacket = new PacketPlayOutEntityMetadata(fakeEntityID, dataWatcher, true);
+
+                        cPlayer.getHandle().playerConnection.sendPacket(metaPacket);
                     }
 
                 } else {
 
                     if (visible && (distance <= maxDistance)) { // Is visible + now within distance, add
                         visibleToPlayers.add(p);
-                        CraftPlayer cPlayer = (CraftPlayer) p;
                         PacketPlayOutSpawnEntityLiving addPacket = new PacketPlayOutSpawnEntityLiving(); // An armour stand is apparently living??
 
                         try {
