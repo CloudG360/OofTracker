@@ -12,6 +12,8 @@ import java.util.HashMap;
 
 public class HealthbarManager implements Listener {
 
+    private static HealthbarManager primaryManager;
+
     protected HashMap<Integer, LivingEntityHealthbar> healthbars; // OwnerID: Healthbar
     protected HashMap<Integer, Long> lastDamageMillis;
 
@@ -19,6 +21,31 @@ public class HealthbarManager implements Listener {
         this.healthbars = new HashMap<>();
         this.lastDamageMillis = new HashMap<>();
     }
+
+    /**
+     * Sets the manager the result provided from HealthBarManager#get() and
+     * finalizes the instance to an extent.
+     *
+     * Cannot be changed once initially called.
+     */
+    public void setAsPrimaryManager(){
+        if(primaryManager == null) primaryManager = this;
+    }
+
+
+
+    protected boolean checkTicks(int entityID) {
+        long currentMilli = System.currentTimeMillis();  // Get current time now so it's consistent if needed.
+
+        long lastMilli = lastDamageMillis.get(entityID);
+        long delta = currentMilli - lastMilli; // Difference between then and now.
+        long maxConfigDelta = OofTracker.getConfiguration().get(ConfigKeys.HEALTH_BAR_VIEW_TICKS) * 50; // Tick is 0.050 seconds = 50 millis
+
+        // TRUE:    Delta is out of the bounds, remove the healthbar.
+        // FALSE:   Delta is in meaning a more recent damage occurred. Keep healthbar.
+        return delta < maxConfigDelta;
+    }
+
 
 
     //TODO: Use the custom damage event triggered by DamageProcessing#onEntityDamage() when added.
@@ -56,16 +83,10 @@ public class HealthbarManager implements Listener {
         }
     }
 
-    protected boolean checkTicks(int entityID) {
-        long currentMilli = System.currentTimeMillis();  // Get current time now so it's consistent if needed.
 
-        long lastMilli = lastDamageMillis.get(entityID);
-        long delta = currentMilli - lastMilli; // Difference between then and now.
-        long maxConfigDelta = OofTracker.getConfiguration().get(ConfigKeys.HEALTH_BAR_VIEW_TICKS) * 50; // Tick is 0.050 seconds = 50 millis
-
-        // TRUE:    Delta is out of the bounds, remove the healthbar.
-        // FALSE:   Delta is in meaning a more recent damage occurred. Keep healthbar.
-        return delta < maxConfigDelta;
+    /** @return the primary instance of the HealthBarManager. */
+    public static HealthbarManager get(){
+        return primaryManager;
     }
 
 }
