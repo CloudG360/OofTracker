@@ -209,7 +209,7 @@ public class LivingEntityHealthBar {
                         NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "a", fakeEntityID); // Entity ID
 
                         NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "b", lastLocation.getX()); // Pos X
-                        NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "c", lastLocation.getY()); // Pos Y
+                        NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "c", getDisplayYCoordinate()); // Pos Y
                         NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "d", lastLocation.getZ()); // Pos Z
 
                         int yaw = (int) (lastLocation.getYaw() * 256.0F / 360.0F);
