@@ -13,7 +13,7 @@ The Damage Stacks are populated with **Damage Traces** which are accessible in t
   - [x] Assist Tag (on Vanilla + Custom death messages)
   - [ ] Custom Death Messages
   - [x] Ping on kill/assist.
-- [ ] Visual Health-bars
+- [x] Visual Health-bars
   - [ ] A variety of options? :O
 - [ ] Damage indicators (Particle-like Text appearing after each hit)
 - [ ] Extra entity damage events
