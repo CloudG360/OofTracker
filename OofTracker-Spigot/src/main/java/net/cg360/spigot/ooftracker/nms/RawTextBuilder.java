@@ -107,7 +107,7 @@ public class RawTextBuilder {
             }
 
             if(!isEmpty) jsonTextBuilder.deleteCharAt(jsonTextBuilder.length() - 1); // Delete last comma
-            jsonTextBuilder.append(",");
+            jsonTextBuilder.append("],");
         }
 
         if(text != null) jsonTextBuilder.append(String.format("\"text\":\"%s\"", text)).append(",");
