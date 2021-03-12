@@ -1,5 +1,7 @@
 package net.cg360.spigot.ooftracker.nms;
 
+import org.bukkit.ChatColor;
+
 import java.util.ArrayList;
 
 //TODO: Move into commons.
@@ -74,6 +76,7 @@ public class RawTextBuilder {
 
     public RawTextBuilder setExtra(ArrayList<RawTextBuilder> extra) { this.extra = extra; return this; }
     public RawTextBuilder setText(String text) { this.text = text; return this; }
+    public RawTextBuilder setColor(ChatColor color) { this.color = color.name().toLowerCase(); return this; } // Change if the names change.
     public RawTextBuilder setColor(String color) { this.color = color; return this; }
     public RawTextBuilder setFont(String font) { this.font = font; return this; }
     public RawTextBuilder setBold(Boolean bold) { this.bold = bold; return this; }
