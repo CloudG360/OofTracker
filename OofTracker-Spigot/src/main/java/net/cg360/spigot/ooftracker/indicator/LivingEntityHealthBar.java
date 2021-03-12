@@ -64,7 +64,7 @@ public class LivingEntityHealthBar {
     }
 
     public void updateDisplayForViewers(double health, double maxHealth) {
-        for (Player p : visibleToPlayers) {
+        for (Player p : new ArrayList<>(visibleToPlayers)) {
             updatePlayerDisplay(p, health, maxHealth);
         }
     }
