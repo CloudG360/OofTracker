@@ -1,0 +1,52 @@
+### -- Major settings -- ###
+
+# Should the plugin restrict it's functions to only events + tracking damage lists
+# Overrides a lot of the plugins functions.
+damage-lists-only: false  # default: false
+
+
+
+### -- Damage Lists -- ###
+
+# Should entities which aren't players be tracked? Does not prevent *direct* custom damage traces being pushed
+# but does prevent *indirect* custom damage traces.
+# Only stops OofTracker events for non-players + registering any visible damage calls.
+non-player-lists-enabled: true  # default: true
+
+# Should a given DamageStack be cleared once it's entity dies?
+clear-list-on-death: true  # default: true
+
+
+
+### -- Deaths -- ###
+
+# Are custom death messages enabled?
+Bdeath-message-override: true  # default: true
+
+# Are the bonus tags at the end of assisted deaths enabled?
+assist-tags-enabled: true  # default: true
+
+# Does the final killer show up in the assist tag? Depends on: ASSIST_TAGS_ENABLED
+killer-in-assist: true  # default: true
+
+# Do assists + killers broadcast an audible ping on kill?
+ping-on-kill: true  # default: true
+
+# Do assists + killers broadcast an audible ping on kill?
+death-broadcast-scope: server  # default: SERVER
+
+
+
+### -- Indicators -- ###
+
+# What distance are health-bars visible from. Use 0 or less to hide.
+health-view-distance: 20  # default: 20
+
+# How long should a health-bar be visible for after damage?
+health-view-ticks: 400  # default: 400
+
+# How high above an entity's head should the health indicator be rendered?
+health-offset: 0.3  # default: 0.3
+
+# How high above an entity's head should the health indicator be rendered?
+health-view-type: squares  # default: squares
