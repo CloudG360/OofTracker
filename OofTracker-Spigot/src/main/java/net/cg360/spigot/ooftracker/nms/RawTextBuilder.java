@@ -110,7 +110,12 @@ public class RawTextBuilder {
             jsonTextBuilder.append("],");
         }
 
-        if(text != null) jsonTextBuilder.append(String.format("\"text\":\"%s\"", text)).append(",");
+        if(text == null) {
+            jsonTextBuilder.append("\"text\":\"\"").append(",");
+
+        } else {
+            jsonTextBuilder.append(String.format("\"text\":\"%s\"", text)).append(",");
+        }
         if(color != null) jsonTextBuilder.append(String.format("\"color\":\"%s\"", color)).append(",");
         if(font != null) jsonTextBuilder.append(String.format("\"font\":\"%s\"", font)).append(",");
 
