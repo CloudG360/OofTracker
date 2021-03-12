@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -105,6 +106,41 @@ public class HealthBarManager implements Listener {
 
                 }, viewTicks + 1); // Ensure the delta will be past the max.
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onEntityHeal(EntityRegainHealthEvent event) {
+        LivingEntity living = (LivingEntity) event.getEntity();
+
+        // Only create/update health bars if enabled (distance > 0)
+        if(OofTracker.getConfiguration().getOrElse(ConfigKeys.HEALTH_BAR_VIEW_DISTANCE, 20d) > 0) {
+            long currentMilli = System.currentTimeMillis(); // Get current time now so it's consistent if needed.
+            int entityID = event.getEntity().getEntityId();
+            int viewTicks = OofTracker.getConfiguration().get(ConfigKeys.HEALTH_BAR_VIEW_TICKS);
+            this.lastDamageMillis.put(entityID, currentMilli);
+
+            if (!healthbars.containsKey(entityID)) {
+                healthbars.put(entityID, new LivingEntityHealthBar((LivingEntity) event.getEntity()) );
+            }
+
+            AttributeInstance maxHealth = living.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+            LivingEntityHealthBar health = this.healthbars.get(entityID); // If this fails, hOW??
+            health.visible = true; // Set visible and update.
+            health.updateDisplayForWorld(living.getHealth() + event.getAmount(), maxHealth == null ? 1d : maxHealth.getValue());
+
+            OofTracker.get().getServer().getScheduler().scheduleSyncDelayedTask(OofTracker.get(), () -> {
+
+                if(checkRemovalTicks(entityID)) {
+                    LivingEntityHealthBar hb = this.healthbars.get(entityID); // Shouldn't fail unless someone has messed with it >:(
+
+                    if(hb != null) { // Stops any pesky NPEs if they do somehow happen
+                        hb.visible = false; // Set invisible and update.
+                        hb.updateDisplayForViewers(0d, 1d); // Removing it. It doesn't matter what value it has.
+                    }
+                }
+
+            }, viewTicks + 1); // Ensure the delta will be past the max.
         }
     }
 
