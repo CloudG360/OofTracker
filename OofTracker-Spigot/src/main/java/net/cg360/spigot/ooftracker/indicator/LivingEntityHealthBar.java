@@ -176,6 +176,7 @@ public class LivingEntityHealthBar {
 
                 this.visible = true;
                 updateDisplay(hostEntity.getHealth(), maxHealth == null ? 1d : maxHealth.getValue());
+                oldLocation = lastLocation;
             }
 
             for (Player player : visibleToPlayers) {
