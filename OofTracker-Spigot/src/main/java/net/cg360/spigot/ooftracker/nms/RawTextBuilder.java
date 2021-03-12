@@ -95,7 +95,7 @@ public class RawTextBuilder {
         jsonTextBuilder.append("{");
 
         if(extra != null) {
-            jsonTextBuilder.append("[");
+            jsonTextBuilder.append("\"extra\":[");
             boolean isEmpty = true;
 
             for(RawTextBuilder builder: extra) {
