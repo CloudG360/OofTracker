@@ -389,7 +389,7 @@ public class LivingEntityHealthBar {
         String healthString = HEALTH_FORMAT.format(health);
         String maxHealthString = HEALTH_FORMAT.format(maxHealth);
         ChatColor barColour = primary == null ? getHealthColour(health, maxHealth) : primary;
-        ChatColor barEmptyColour = secondary == null ? ChatColor.GRAY : primary;
+        ChatColor barEmptyColour = secondary == null ? ChatColor.GRAY : secondary;
 
         double checkedMaxHealth = maxHealth > 0 ? maxHealth : 1; // Ensure maxHealth is not 0.
         double healthFraction = health / checkedMaxHealth;
