@@ -269,7 +269,6 @@ public class LivingEntityHealthBar {
             default: // SQUARES is default.
             case SQUARES:
                 return genSquaresFormat(null, health, maxHealth, true);
-                break;
         }
     }
 
@@ -308,7 +307,7 @@ public class LivingEntityHealthBar {
 
         RawTextBuilder barBuilder = new RawTextBuilder().setBold(false).setColor(barColour);
 
-        for(int i = 0; i < 1; i += 0.1d) { // Tbh this could be split into two RawText components rather than 10.
+        for(double i = 0; i < 1; i += 0.1d) { // Tbh this could be split into two RawText components rather than 10.
             RawTextBuilder squareBuilder = new RawTextBuilder("\u2B1C");
             if(healthFraction < i) squareBuilder.setColor(ChatColor.GRAY); // Override base colour if true
             barBuilder.append(squareBuilder);
