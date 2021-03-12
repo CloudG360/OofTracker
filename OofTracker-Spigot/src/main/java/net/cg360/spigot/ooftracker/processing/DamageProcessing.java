@@ -170,14 +170,10 @@ public class DamageProcessing implements Listener {
                     }
                 }
 
-                if(assistBuilder.length() > 0) {
-                    assistBuilder.delete(assistBuilder.length() - 2, assistBuilder.length());
-                }
-
                 String buildString = assistBuilder.toString();
 
                 if (buildString.length() > 0) {
-                    TextComponent assistInfo = new TextComponent(buildString);
+                    TextComponent assistInfo = new TextComponent(buildString.substring(0, buildString.length() - 2));
                     assistInfo.setColor(ChatColor.DARK_AQUA);
 
                     TextComponent assistAddon = new TextComponent(" (+ Assist)");
