@@ -90,7 +90,7 @@ public class HealthBarManager implements Listener {
                 AttributeInstance maxHealth = living.getAttribute(Attribute.GENERIC_MAX_HEALTH);
                 LivingEntityHealthBar health = this.healthbars.get(entityID); // If this fails, hOW??
                 health.visible = true; // Set visible and update.
-                health.updateDisplay(living.getHealth() - event.getFinalDamage(), maxHealth == null ? 1d : maxHealth.getValue());
+                health.updateDisplayForWorld(living.getHealth() - event.getFinalDamage(), maxHealth == null ? 1d : maxHealth.getValue());
 
                 OofTracker.get().getServer().getScheduler().scheduleSyncDelayedTask(OofTracker.get(), () -> {
 
@@ -99,7 +99,7 @@ public class HealthBarManager implements Listener {
 
                         if(hb != null) { // Stops any pesky NPEs if they do somehow happen
                             hb.visible = false; // Set invisible and update.
-                            hb.updateDisplay(0, 10); // Removing it. It doesn't matter what value it has.
+                            hb.updateDisplayForViewers(0d, 1d); // Removing it. It doesn't matter what value it has.
                         }
                     }
 
@@ -116,7 +116,7 @@ public class HealthBarManager implements Listener {
         if(healthbars.containsKey(entityID)) {
             LivingEntityHealthBar hb = healthbars.get(entityID);
             hb.visible = false;
-            hb.updateDisplay(0, 1);
+            hb.updateDisplayForViewers(0, 1);
 
             healthbars.remove(entityID);
         }

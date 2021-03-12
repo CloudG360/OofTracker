@@ -63,7 +63,13 @@ public class LivingEntityHealthBar {
         }
     }
 
-    public void updateDisplay(double health, double maxHealth) {
+    public void updateDisplayForViewers(double health, double maxHealth) {
+        for (Player p : visibleToPlayers) {
+            updatePlayerDisplay(p, health, maxHealth);
+        }
+    }
+
+    public void updateDisplayForWorld(double health, double maxHealth) {
         for (Player p : hostEntity.getWorld().getPlayers()) {
             updatePlayerDisplay(p, health, maxHealth);
         }
@@ -188,7 +194,7 @@ public class LivingEntityHealthBar {
                 AttributeInstance maxHealth = hostEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
 
                 this.visible = true;
-                updateDisplay(hostEntity.getHealth(), maxHealth == null ? 1d : maxHealth.getValue()); // Update for viewers of the world.
+                updateDisplayForWorld(hostEntity.getHealth(), maxHealth == null ? 1d : maxHealth.getValue()); // Update for viewers of the world.
                 oldLocation = lastLocation;
             }
 
