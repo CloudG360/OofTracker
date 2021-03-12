@@ -58,7 +58,7 @@ public class LivingEntityHealthBar {
      * @param maxHealth the max health of the entity to display.
      */
     public void updateDisplayForEveryone(double health, double maxHealth) {
-        for (Player p : hostEntity.getWorld().getPlayers()) {
+        for (Player p : OofTracker.get().getServer().getOnlinePlayers()) {
             updatePlayerDisplay(p, health, maxHealth);
         }
     }
