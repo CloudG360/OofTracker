@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.EntityTransformEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -141,6 +142,19 @@ public class HealthBarManager implements Listener {
                 }
 
             }, viewTicks + 1); // Ensure the delta will be past the max.
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onEntityTransform(EntityTransformEvent event) { // Clear healthbars on transform
+        int entityID = event.getTransformedEntity().getEntityId();
+
+        if(healthbars.containsKey(entityID)) {
+            LivingEntityHealthBar hb = healthbars.get(entityID);
+            hb.visible = false;
+            hb.updateDisplayForViewers(0, 1);
+
+            healthbars.remove(entityID);
         }
     }
 
