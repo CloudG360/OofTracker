@@ -41,11 +41,12 @@ public final class OofTracker extends JavaPlugin implements Listener {
 
             // -- Set Managers --
             this.damageStackManager = new DamageStackManager();
-            this.healthBarManager = new HealthBarManager();
             this.damageProcessing = new DamageProcessing();
 
+            if(!Util.check(ConfigKeys.DAMAGE_LISTS_ONLY, false)) this.healthBarManager = new HealthBarManager();
+
             this.damageStackManager.setAsPrimaryManager();
-            this.healthBarManager.setAsPrimaryManager();
+            if(!Util.check(ConfigKeys.DAMAGE_LISTS_ONLY, false)) this.healthBarManager.setAsPrimaryManager();
 
 
             // -- Register DamageProcessors --
@@ -54,11 +55,11 @@ public final class OofTracker extends JavaPlugin implements Listener {
 
             // -- Register listeners --
             this.getServer().getPluginManager().registerEvents(damageProcessing, this);
-            this.getServer().getPluginManager().registerEvents(healthBarManager, this);
+            if(!Util.check(ConfigKeys.DAMAGE_LISTS_ONLY, false)) this.getServer().getPluginManager().registerEvents(healthBarManager, this);
 
 
             // -- Register Commands --
-            this.getCommand("debugtest").setExecutor(new CommandDebug());
+            //this.getCommand("debugtest").setExecutor(new CommandDebug());
 
         } catch (Exception err){
             oofTracker = null;
