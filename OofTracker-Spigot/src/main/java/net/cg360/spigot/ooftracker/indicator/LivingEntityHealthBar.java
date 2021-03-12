@@ -259,11 +259,16 @@ public class LivingEntityHealthBar {
 
             // -- SQUARES --
 
+            case SQUARES_MONO_NO_TEXT:
+                return genSquaresFormat(ChatColor.RED, health, maxHealth, false);
             case SQUARES_MONO:
-                primaryColour = ChatColor.RED;
-            default:
+                return genSquaresFormat(ChatColor.RED, health, maxHealth, true);
+            case SQUARES_NO_TEXT:
+                return genSquaresFormat(null, health, maxHealth, false);
+
+            default: // SQUARES is default.
             case SQUARES:
-                if(primaryColour == null) primaryColour = getHealthColour(health, maxHealth);
+                return genSquaresFormat(null, health, maxHealth, true);
                 break;
         }
     }
@@ -282,8 +287,44 @@ public class LivingEntityHealthBar {
         ChatColor genColour = getHealthColour(health, maxHealth);
 
         return new RawTextBuilder(healthString).setBold(true).setColor(primary == null ? genColour : primary)
-                .append(new RawTextBuilder(String.format(" / %s ♡", maxHealthString)).setColor(secondary == null ? genColour : secondary))
+                .append(new RawTextBuilder(String.format(" / %s \u2661", maxHealthString)).setColor(secondary == null ? genColour : secondary))
                 .toString();
+    }
+
+    /**
+     * Generates the text string for "SQUARES" variety health bars.
+     * @param primary the colour of the health bar. Colour is based on health if null.
+     * @param health the entity's health.
+     * @param maxHealth the entity's max health
+     * @return the built Raw Text string.
+     */
+    private static String genSquaresFormat(ChatColor primary, double health, double maxHealth, boolean includeText) {
+        String healthString = HEALTH_FORMAT.format(health);
+        String maxHealthString = HEALTH_FORMAT.format(maxHealth);
+        ChatColor barColour = primary == null ? getHealthColour(health, maxHealth) : primary;
+
+        double checkedMaxHealth = maxHealth > 0 ? maxHealth : 1; // Ensure maxHealth is not 0.
+        double healthFraction = health / checkedMaxHealth;
+
+        RawTextBuilder barBuilder = new RawTextBuilder().setBold(false).setColor(barColour);
+
+        for(int i = 0; i < 1; i += 0.1d) { // Tbh this could be split into two RawText components rather than 10.
+            RawTextBuilder squareBuilder = new RawTextBuilder("\u2B1C");
+            if(healthFraction < i) squareBuilder.setColor(ChatColor.GRAY); // Override base colour if true
+            barBuilder.append(squareBuilder);
+        }
+
+        if(includeText) {
+            RawTextBuilder fullBuilder = new RawTextBuilder().setBold(true).setColor(barColour);
+            // Surround the bar text.
+            fullBuilder.append(new RawTextBuilder(healthString + " "));
+            fullBuilder.append(barBuilder);
+            fullBuilder.append(new RawTextBuilder(" " + maxHealthString));
+            return barBuilder.toString();
+
+        } else {
+            return barBuilder.toString(); // The bar will be enough.
+        }
     }
 
 
