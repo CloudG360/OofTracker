@@ -48,100 +48,102 @@ public class LivingEntityHealthBar {
     }
 
 
-
     public void updateDisplay(double health, double maxHealth) {
+        for (Player p : hostEntity.getWorld().getPlayers()) {
+            updatePlayerDisplay(p, health, maxHealth);
+        }
+    }
+
+    public void updatePlayerDisplay(Player p, double health, double maxHealth) {
         double maxDistance = OofTracker.getConfiguration().getOrElse(ConfigKeys.HEALTH_BAR_VIEW_DISTANCE, 20d);
 
-        for(Player p: hostEntity.getWorld().getPlayers()) {
+        if(p != hostEntity) { // Ensure the player, if they are the entity, are not visible.
+            double distance = p.getLocation().distance(hostEntity.getLocation());
+            CraftPlayer cPlayer = (CraftPlayer) p;
 
-            if(p != hostEntity) { // Ensure the player, if they are the entity, are not visible.
-                double distance = p.getLocation().distance(hostEntity.getLocation());
-                CraftPlayer cPlayer = (CraftPlayer) p;
+            if(visibleToPlayers.contains(p)) {
 
-                if(visibleToPlayers.contains(p)) {
+                if ((!visible) || (distance > maxDistance)) { // Isn't visible or the distance is now to large, remove
+                    PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(fakeEntityID);
+                    cPlayer.getHandle().playerConnection.sendPacket(destroyPacket);
+                    visibleToPlayers.remove(p);
 
-                    if ((!visible) || (distance > maxDistance)) { // Isn't visible or the distance is now to large, remove
-                        PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(fakeEntityID);
-                        cPlayer.getHandle().playerConnection.sendPacket(destroyPacket);
-                        visibleToPlayers.remove(p);
+                } else { // Still visible, may include a health update so send new meta.
+                    DataWatcher dataWatcher = new DataWatcher(null);
 
-                    } else { // Still visible, may include a health update so send new meta.
+
+                    dataWatcher.register(new DataWatcherObject<>(0, DataWatcherRegistry.a), (byte) 0x20); // Is invisible
+                    dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f),  Optional.ofNullable( IChatBaseComponent.ChatSerializer.b( getHealthText(health, maxHealth) ) ) ); // Custom name
+                    dataWatcher.register(new DataWatcherObject<>(3, DataWatcherRegistry.i), true); // Custom name visible
+                    dataWatcher.register(new DataWatcherObject<>(14, DataWatcherRegistry.a), (byte) 0x10); // Set Marker
+
+                    PacketPlayOutEntityMetadata metaPacket = new PacketPlayOutEntityMetadata(fakeEntityID, dataWatcher, true);
+
+                    cPlayer.getHandle().playerConnection.sendPacket(metaPacket);
+                }
+
+            } else {
+
+                if (visible && (distance <= maxDistance)) { // Is visible + now within distance, add
+                    visibleToPlayers.add(p);
+                    PacketPlayOutSpawnEntityLiving addPacket = new PacketPlayOutSpawnEntityLiving(); // An armour stand is apparently living??
+
+                    try {
+
+                        // -- ADD ENTITY --
+
+                        NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "a", fakeEntityID); // Entity ID
+                        NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "b", fakeEntityUUID); // Entity UUID
+                        NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "c", NMS.NETID_ARMOUR_STAND); // Entity Type
+
+                        // Copy host entity's location and follow
+                        NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "d", hostEntity.getLocation().getX()); // Location X
+                        NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "e", getDisplayYCoordinate()); // Location Y (+ offset)
+                        NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "f", hostEntity.getLocation().getZ()); // Location Z
+
+                        // Copy host entity's motion and follow.
+                        int[] velocity = calculateNetworkVelocity(hostEntity.getVelocity());
+                        NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "g", velocity[0]); // Velocity X
+                        NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "h", velocity[1]); // Location Y
+                        NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "i", velocity[2]); // Location Z
+
+                        // Technically rotation doesn't matter but let's copy anyway.
+                        int yaw = (int) (hostEntity.getLocation().getYaw() * 256.0F / 360.0F);
+                        int pitch = (int) (hostEntity.getLocation().getPitch() * 256.0F / 360.0F);
+                        int head = (int) (((CraftLivingEntity)hostEntity).getHandle().getHeadRotation() * 256.0F / 360.0F); // Head rotation apparently.
+                        NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "j", (byte) yaw); // Yaw
+                        NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "k", (byte) pitch); // Pitch
+                        NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "l", (byte) head); // Head rotate.
+
+
+
+                        // -- UPDATE ENTITY META --
+
                         DataWatcher dataWatcher = new DataWatcher(null);
 
 
                         dataWatcher.register(new DataWatcherObject<>(0, DataWatcherRegistry.a), (byte) 0x20); // Is invisible
-                        dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f),  Optional.ofNullable( IChatBaseComponent.ChatSerializer.b( getHealthText(health, maxHealth) ) ) ); // Custom name
+                        dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f), Optional.ofNullable( IChatBaseComponent.ChatSerializer.b( getHealthText(health, maxHealth) ) ) ); // Custom name
                         dataWatcher.register(new DataWatcherObject<>(3, DataWatcherRegistry.i), true); // Custom name visible
                         dataWatcher.register(new DataWatcherObject<>(14, DataWatcherRegistry.a), (byte) 0x10); // Set Marker
 
                         PacketPlayOutEntityMetadata metaPacket = new PacketPlayOutEntityMetadata(fakeEntityID, dataWatcher, true);
 
+                        cPlayer.getHandle().playerConnection.sendPacket(addPacket);
                         cPlayer.getHandle().playerConnection.sendPacket(metaPacket);
-                    }
 
-                } else {
+                    } catch (NoSuchFieldException err) {
+                        OofTracker.getLog().severe("Error building packet. - No field! Is this the wrong version?");
+                        err.printStackTrace();
+                        visibleToPlayers.remove(p); // Remove player as it wasn't displayed.
+                        return;
 
-                    if (visible && (distance <= maxDistance)) { // Is visible + now within distance, add
-                        visibleToPlayers.add(p);
-                        PacketPlayOutSpawnEntityLiving addPacket = new PacketPlayOutSpawnEntityLiving(); // An armour stand is apparently living??
+                    } catch (IllegalAccessException err) {
+                        OofTracker.getLog().severe("Error building packet - Can't access field! Is something misconfigured?");
+                        err.printStackTrace();
+                        visibleToPlayers.remove(p); // Remove player as it wasn't displayed.
+                        return;
 
-                        try {
-
-                            // -- ADD ENTITY --
-
-                            NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "a", fakeEntityID); // Entity ID
-                            NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "b", fakeEntityUUID); // Entity UUID
-                            NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "c", NMS.NETID_ARMOUR_STAND); // Entity Type
-
-                            // Copy host entity's location and follow
-                            NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "d", hostEntity.getLocation().getX()); // Location X
-                            NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "e", getDisplayYCoordinate()); // Location Y (+ offset)
-                            NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "f", hostEntity.getLocation().getZ()); // Location Z
-
-                            // Copy host entity's motion and follow.
-                            int[] velocity = calculateNetworkVelocity(hostEntity.getVelocity());
-                            NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "g", velocity[0]); // Velocity X
-                            NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "h", velocity[1]); // Location Y
-                            NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "i", velocity[2]); // Location Z
-
-                            // Technically rotation doesn't matter but let's copy anyway.
-                            int yaw = (int) (hostEntity.getLocation().getYaw() * 256.0F / 360.0F);
-                            int pitch = (int) (hostEntity.getLocation().getPitch() * 256.0F / 360.0F);
-                            int head = (int) (((CraftLivingEntity)hostEntity).getHandle().getHeadRotation() * 256.0F / 360.0F); // Head rotation apparently.
-                            NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "j", (byte) yaw); // Yaw
-                            NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "k", (byte) pitch); // Pitch
-                            NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "l", (byte) head); // Head rotate.
-
-
-
-                            // -- UPDATE ENTITY META --
-
-                            DataWatcher dataWatcher = new DataWatcher(null);
-
-
-                            dataWatcher.register(new DataWatcherObject<>(0, DataWatcherRegistry.a), (byte) 0x20); // Is invisible
-                            dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f), Optional.ofNullable( IChatBaseComponent.ChatSerializer.b( getHealthText(health, maxHealth) ) ) ); // Custom name
-                            dataWatcher.register(new DataWatcherObject<>(3, DataWatcherRegistry.i), true); // Custom name visible
-                            dataWatcher.register(new DataWatcherObject<>(14, DataWatcherRegistry.a), (byte) 0x10); // Set Marker
-
-                            PacketPlayOutEntityMetadata metaPacket = new PacketPlayOutEntityMetadata(fakeEntityID, dataWatcher, true);
-
-                            cPlayer.getHandle().playerConnection.sendPacket(addPacket);
-                            cPlayer.getHandle().playerConnection.sendPacket(metaPacket);
-
-                        } catch (NoSuchFieldException err) {
-                            OofTracker.getLog().severe("Error building packet. - No field! Is this the wrong version?");
-                            err.printStackTrace();
-                            visibleToPlayers.remove(p); // Remove player as it wasn't displayed.
-                            return;
-
-                        } catch (IllegalAccessException err) {
-                            OofTracker.getLog().severe("Error building packet - Can't access field! Is something misconfigured?");
-                            err.printStackTrace();
-                            visibleToPlayers.remove(p); // Remove player as it wasn't displayed.
-                            return;
-
-                        }
                     }
                 }
             }
@@ -250,11 +252,7 @@ public class LivingEntityHealthBar {
 
             // -- BAR --
 
-            case BAR_MONO:
-                primaryColour = ChatColor.RED;
-            case BAR:
-                if(primaryColour == null) primaryColour = getHealthColour(health, maxHealth);
-                break;
+
 
 
             // -- SQUARES --
