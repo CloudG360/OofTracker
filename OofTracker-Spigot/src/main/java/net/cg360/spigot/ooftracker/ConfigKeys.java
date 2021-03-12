@@ -1,6 +1,7 @@
 package net.cg360.spigot.ooftracker;
 
 import net.cg360.nsapi.commons.data.keyvalue.Key;
+import net.cg360.spigot.ooftracker.indicator.HealthFormat;
 import net.cg360.spigot.ooftracker.processing.DeathBroadcastScope;
 
 public final class ConfigKeys {
@@ -54,5 +55,8 @@ public final class ConfigKeys {
 
     // How high above an entity's head should the health indicator be rendered?
     public static final Key<Double> HEALTH_BAR_OFFSET = new Key<>("health-offset"); // default: 0.3
+
+    // How high above an entity's head should the health indicator be rendered?
+    public static final Key<HealthFormat> HEALTH_BAR_VIEW_TYPE = new Key<>("health-view-type"); // default: squares
 
 }

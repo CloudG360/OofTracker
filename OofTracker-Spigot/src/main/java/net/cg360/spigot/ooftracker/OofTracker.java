@@ -3,6 +3,7 @@ package net.cg360.spigot.ooftracker;
 import net.cg360.nsapi.commons.data.Settings;
 import net.cg360.spigot.ooftracker.command.CommandDebug;
 import net.cg360.spigot.ooftracker.indicator.HealthBarManager;
+import net.cg360.spigot.ooftracker.indicator.HealthFormat;
 import net.cg360.spigot.ooftracker.list.DamageStackManager;
 import net.cg360.spigot.ooftracker.processing.DamageProcessing;
 import net.cg360.spigot.ooftracker.processing.DeathBroadcastScope;
@@ -97,6 +98,8 @@ public final class OofTracker extends JavaPlugin implements Listener {
                     .set(ConfigKeys.HEALTH_BAR_VIEW_DISTANCE, config.getDouble(ConfigKeys.HEALTH_BAR_VIEW_DISTANCE.get(), 20d))
                     .set(ConfigKeys.HEALTH_BAR_VIEW_TICKS, config.getInt(ConfigKeys.HEALTH_BAR_VIEW_TICKS.get(), 400))
                     .set(ConfigKeys.HEALTH_BAR_OFFSET, config.getDouble(ConfigKeys.HEALTH_BAR_OFFSET.get(), 0.3d))
+                    .set(ConfigKeys.HEALTH_BAR_VIEW_TYPE, Util.stringToEnum(HealthFormat.class, config.getString(ConfigKeys.HEALTH_BAR_VIEW_TYPE.get()), HealthFormat.SQUARES))
+
             ;
 
             return true;
