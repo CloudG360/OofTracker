@@ -17,6 +17,7 @@ import org.bukkit.util.Vector;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,6 +50,18 @@ public class LivingEntityHealthBar {
         this.visible = false;
     }
 
+    /**
+     * Unrecommended as it runs for every player on the server rather
+     * than the host entity's world. Should only be used when
+     * #updateDisplay() doesn't work.
+     * @param health the health of the entity to display.
+     * @param maxHealth the max health of the entity to display.
+     */
+    public void updateDisplayForEveryone(double health, double maxHealth) {
+        for (Player p : hostEntity.getWorld().getPlayers()) {
+            updatePlayerDisplay(p, health, maxHealth);
+        }
+    }
 
     public void updateDisplay(double health, double maxHealth) {
         for (Player p : hostEntity.getWorld().getPlayers()) {
@@ -168,14 +181,14 @@ public class LivingEntityHealthBar {
         if(oldLoc.isPresent()) { // A movement has occured
             Location oldLocation = oldLoc.get();
 
-            if(oldLocation.getWorld() != lastLocation.getWorld()) { // World has changed. Drop all old viewers.
+            if(!Objects.equals(oldLocation.getWorld(), lastLocation.getWorld())) { // World has changed. Drop all old viewers.
                 this.visible = false;
-                updateDisplay(0d, 1d);
+                updateDisplayForEveryone(0d, 1d); // Ensure no one can see the healthbar
 
                 AttributeInstance maxHealth = hostEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
 
                 this.visible = true;
-                updateDisplay(hostEntity.getHealth(), maxHealth == null ? 1d : maxHealth.getValue());
+                updateDisplay(hostEntity.getHealth(), maxHealth == null ? 1d : maxHealth.getValue()); // Update for viewers of the world.
                 oldLocation = lastLocation;
             }
 
