@@ -319,7 +319,7 @@ public class LivingEntityHealthBar {
             fullBuilder.append(new RawTextBuilder(healthString + " "));
             fullBuilder.append(barBuilder);
             fullBuilder.append(new RawTextBuilder(" " + maxHealthString));
-            return barBuilder.toString();
+            return fullBuilder.toString();
 
         } else {
             return barBuilder.toString(); // The bar will be enough.
