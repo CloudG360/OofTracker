@@ -144,14 +144,9 @@ public class DamageProcessing implements Listener {
                 DamageStack stack = DamageStackManager.get().getDamageList(event.getEntity()).duplicate();
                 StringBuilder assistBuilder = new StringBuilder();
 
-                boolean lastSuccessful = false;
                 ArrayList<Player> previousDamagers = new ArrayList<>();
 
                 while (!stack.isEmpty()) {
-
-                    if(lastSuccessful) {
-                        assistBuilder.append(", "); // Add a comma if the last cycle was appended.
-                    }
                     DamageTrace t = stack.pop();
                     Entity root = t.getData().get(TraceKeys.ATTACKER_ROOT);
 
@@ -166,18 +161,17 @@ public class DamageProcessing implements Listener {
 
                             if(Util.check(ConfigKeys.KILLER_IN_ASSIST_TAG, true)) {
                                 assistBuilder.append(p.getName()); // Only add killer to assist tag if true
-                                lastSuccessful = true; // Only applies to shown names.
+                                assistBuilder.append(", ");
                             }
 
                             previousDamagers.add(p);
                         }
                         continue;
                     }
-                    lastSuccessful = false;
                 }
 
-                if(!lastSuccessful) {
-                    assistBuilder.substring(0, assistBuilder.length() - 2);
+                if(assistBuilder.length() > 0) {
+                    assistBuilder.delete(assistBuilder.length() - 2, assistBuilder.length());
                 }
 
                 String buildString = assistBuilder.toString();
