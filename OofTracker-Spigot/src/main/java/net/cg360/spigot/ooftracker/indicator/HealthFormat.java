@@ -5,6 +5,7 @@ public enum HealthFormat {
     // Mono variants just use 1 base colour.
 
     TEXT,
+    TEXT_SPLIT, // Damage-based colour only affects the health (not the max health text)
     TEXT_MONO,
     BAR,
     BAR_MONO,

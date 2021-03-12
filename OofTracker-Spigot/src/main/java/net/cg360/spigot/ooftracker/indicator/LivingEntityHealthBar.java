@@ -233,19 +233,22 @@ public class LivingEntityHealthBar {
     }
 
     public static String getHealthText(double health, double maxHealth) {
-        String healthString = HEALTH_FORMAT.format(health);
-        String maxHealthString = HEALTH_FORMAT.format(maxHealth);
-        String builtText = "";
-        ChatColor primaryColour = null;
 
         switch (OofTracker.getConfiguration().getOrElse(ConfigKeys.HEALTH_BAR_VIEW_TYPE, HealthFormat.SQUARES)) {
 
-            case TEXT_MONO:
-                primaryColour = ChatColor.RED;
-            case TEXT:
-                if(primaryColour == null) primaryColour = getHealthColour(health, maxHealth);
-                break;
+            // -- TEXT --
 
+            case TEXT_MONO:
+                return genTextFormat(ChatColor.RED, ChatColor.DARK_RED, health, maxHealth);
+
+            case TEXT_SPLIT:
+                return genTextFormat(null, ChatColor.DARK_RED, health, maxHealth);
+
+            case TEXT:
+                return genTextFormat(null, null, health, maxHealth);
+
+
+            // -- BAR --
 
             case BAR_MONO:
                 primaryColour = ChatColor.RED;
@@ -254,6 +257,8 @@ public class LivingEntityHealthBar {
                 break;
 
 
+            // -- SQUARES --
+
             case SQUARES_MONO:
                 primaryColour = ChatColor.RED;
             default:
@@ -261,19 +266,6 @@ public class LivingEntityHealthBar {
                 if(primaryColour == null) primaryColour = getHealthColour(health, maxHealth);
                 break;
         }
-
-        return builtText;
-    }
-
-    private static ChatColor getHealthColour(double health, double maxHealth) {
-        double checkedMaxHealth = maxHealth > 0 ? maxHealth : 1; // Ensure maxHealth is not 0.
-        double fraction = health / checkedMaxHealth;
-
-        if (fraction >= THRESHOLD_HEALTHY) return ChatColor.GREEN;
-        if (fraction >= THRESHOLD_OKAY) return ChatColor.YELLOW;
-        if(fraction >= THRESHOLD_WOUNDED) return ChatColor.GOLD;
-
-        return ChatColor.RED; // Otherwise it's red cause it's below the threshold
     }
 
     /**
