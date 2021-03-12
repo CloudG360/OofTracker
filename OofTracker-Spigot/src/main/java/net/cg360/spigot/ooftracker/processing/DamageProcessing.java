@@ -137,7 +137,7 @@ public class DamageProcessing implements Listener {
         if (event instanceof PlayerDeathEvent) {
             PlayerDeathEvent e = (PlayerDeathEvent) event;
 
-            if (Util.check(ConfigKeys.ASSIST_TAGS_ENABLED, true)) {
+            if (Util.check(ConfigKeys.ASSIST_TAGS_ENABLED, true)  && (!Util.check(ConfigKeys.DAMAGE_LISTS_ONLY, false))) {
                 TextComponent text = new TextComponent(e.getDeathMessage());
                 e.setDeathMessage(""); // As we're sending raw, do not send original.
 
