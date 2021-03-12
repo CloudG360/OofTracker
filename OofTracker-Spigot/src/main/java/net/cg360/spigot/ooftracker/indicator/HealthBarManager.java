@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.HashMap;
@@ -118,6 +119,15 @@ public class HealthBarManager implements Listener {
             hb.updateDisplay(0, 1);
 
             healthbars.remove(entityID);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPlayerDimensionTransfer(PlayerChangedWorldEvent event) {
+
+        for(LivingEntityHealthBar hb: healthbars.values()) {
+            AttributeInstance maxHealth = hb.hostEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+            hb.updatePlayerDisplay(event.getPlayer(), hb.hostEntity.getHealth(), maxHealth == null ? 1 : maxHealth.getValue());
         }
     }
 
