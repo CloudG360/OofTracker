@@ -45,7 +45,7 @@ public class LivingEntityHealthBar {
 
 
 
-    public void updateDisplay(double health) {
+    public void updateDisplay(double health, double maxHealth) {
         double maxDistance = OofTracker.getConfiguration().getOrElse(ConfigKeys.HEALTH_BAR_VIEW_DISTANCE, 20d);
 
         for(Player p: hostEntity.getWorld().getPlayers()) {
@@ -66,7 +66,7 @@ public class LivingEntityHealthBar {
 
 
                         dataWatcher.register(new DataWatcherObject<>(0, DataWatcherRegistry.a), (byte) 0x20); // Is invisible
-                        dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f),  Optional.ofNullable( IChatBaseComponent.ChatSerializer.b( getHealthText( health ) ) ) ); // Custom name
+                        dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f),  Optional.ofNullable( IChatBaseComponent.ChatSerializer.b( getHealthText(health, maxHealth) ) ) ); // Custom name
                         dataWatcher.register(new DataWatcherObject<>(3, DataWatcherRegistry.i), true); // Custom name visible
                         dataWatcher.register(new DataWatcherObject<>(14, DataWatcherRegistry.a), (byte) 0x10); // Set Marker
 
@@ -116,7 +116,7 @@ public class LivingEntityHealthBar {
 
 
                             dataWatcher.register(new DataWatcherObject<>(0, DataWatcherRegistry.a), (byte) 0x20); // Is invisible
-                            dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f), Optional.ofNullable( IChatBaseComponent.ChatSerializer.b( getHealthText( health ) ) ) ); // Custom name
+                            dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f), Optional.ofNullable( IChatBaseComponent.ChatSerializer.b( getHealthText(health, maxHealth) ) ) ); // Custom name
                             dataWatcher.register(new DataWatcherObject<>(3, DataWatcherRegistry.i), true); // Custom name visible
                             dataWatcher.register(new DataWatcherObject<>(14, DataWatcherRegistry.a), (byte) 0x10); // Set Marker
 
@@ -228,7 +228,9 @@ public class LivingEntityHealthBar {
         return new int[]{ (int)dX, (int)dY, (int)dZ };
     }
 
-    public static String getHealthText(double health) {
-        return new RawTextBuilder(String.valueOf(Math.ceil(health))).setBold(true).setColor("red").toString();
+    public static String getHealthText(double health, double maxHealth) {
+        String healthString = HEALTH_FORMAT.format(health);
+        String maxHealthString = HEALTH_FORMAT.format(maxHealth);
+        return new RawTextBuilder(String.valueOf(health)).setBold(true).setColor("red").toString();
     }
 }

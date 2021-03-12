@@ -2,6 +2,8 @@ package net.cg360.spigot.ooftracker.indicator;
 
 import net.cg360.spigot.ooftracker.ConfigKeys;
 import net.cg360.spigot.ooftracker.OofTracker;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -78,16 +80,16 @@ public class HealthBarManager implements Listener {
                 long currentMilli = System.currentTimeMillis(); // Get current time now so it's consistent if needed.
                 int entityID = event.getEntity().getEntityId();
                 int viewTicks = OofTracker.getConfiguration().get(ConfigKeys.HEALTH_BAR_VIEW_TICKS);
-
                 this.lastDamageMillis.put(entityID, currentMilli);
 
                 if (!healthbars.containsKey(entityID)) {
                     healthbars.put(entityID, new LivingEntityHealthBar((LivingEntity) event.getEntity()) );
                 }
 
+                AttributeInstance maxHealth = living.getAttribute(Attribute.GENERIC_MAX_HEALTH);
                 LivingEntityHealthBar health = this.healthbars.get(entityID); // If this fails, hOW??
                 health.visible = true; // Set visible and update.
-                health.updateDisplay(living.getHealth() - event.getFinalDamage());
+                health.updateDisplay(living.getHealth() - event.getFinalDamage(), maxHealth == null ? 1d : maxHealth.getValue());
 
                 OofTracker.get().getServer().getScheduler().scheduleSyncDelayedTask(OofTracker.get(), () -> {
 
@@ -96,7 +98,7 @@ public class HealthBarManager implements Listener {
 
                         if(hb != null) { // Stops any pesky NPEs if they do somehow happen
                             hb.visible = false; // Set invisible and update.
-                            hb.updateDisplay(living.getHealth() - event.getFinalDamage());
+                            hb.updateDisplay(0, 10); // Removing it. It doesn't matter what value it has.
                         }
                     }
 
@@ -113,7 +115,7 @@ public class HealthBarManager implements Listener {
         if(healthbars.containsKey(entityID)) {
             LivingEntityHealthBar hb = healthbars.get(entityID);
             hb.visible = false;
-            hb.updateDisplay(0);
+            hb.updateDisplay(0, 1);
 
             healthbars.remove(entityID);
         }
