@@ -308,7 +308,7 @@ public class LivingEntityHealthBar {
         RawTextBuilder barBuilder = new RawTextBuilder().setBold(false).setColor(barColour);
 
         for(double i = 0; i < 1; i += 0.1d) { // Tbh this could be split into two RawText components rather than 10.
-            RawTextBuilder squareBuilder = new RawTextBuilder("\u2B1C");
+            RawTextBuilder squareBuilder = new RawTextBuilder("\u25A0");
             if(healthFraction < i) squareBuilder.setColor(ChatColor.GRAY); // Override base colour if true
             barBuilder.append(squareBuilder);
         }
