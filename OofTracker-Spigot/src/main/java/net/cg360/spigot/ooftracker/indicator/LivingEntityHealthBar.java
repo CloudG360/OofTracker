@@ -7,6 +7,8 @@ import net.cg360.spigot.ooftracker.nms.RawTextBuilder;
 import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.LivingEntity;
@@ -165,6 +167,16 @@ public class LivingEntityHealthBar {
 
         if(oldLoc.isPresent()) { // A movement has occured
             Location oldLocation = oldLoc.get();
+
+            if(oldLocation.getWorld() != lastLocation.getWorld()) { // World has changed. Drop all old viewers.
+                this.visible = false;
+                updateDisplay(0d, 1d);
+
+                AttributeInstance maxHealth = hostEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+
+                this.visible = true;
+                updateDisplay(hostEntity.getHealth(), maxHealth == null ? 1d : maxHealth.getValue());
+            }
 
             for (Player player : visibleToPlayers) {
 
