@@ -5,6 +5,7 @@ import net.cg360.spigot.ooftracker.OofTracker;
 import net.cg360.spigot.ooftracker.nms.NMS;
 import net.cg360.spigot.ooftracker.nms.RawTextBuilder;
 import net.minecraft.server.v1_16_R3.*;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
@@ -19,7 +20,10 @@ import java.util.UUID;
 
 public class LivingEntityHealthBar {
 
-    private static final DecimalFormat HEALTH_FORMAT = new DecimalFormat("0.0");
+    public static final DecimalFormat HEALTH_FORMAT = new DecimalFormat("0.0");
+    public static final double THRESHOLD_HEALTHY = 0.85d; // > = green
+    public static final double THRESHOLD_OKAY = 0.6d; // > = yellow
+    public static final double THRESHOLD_WOUNDED = 0.25d; // > = orange | < = red
 
     protected Location lastLocation;
     protected LivingEntity hostEntity;
@@ -231,6 +235,44 @@ public class LivingEntityHealthBar {
     public static String getHealthText(double health, double maxHealth) {
         String healthString = HEALTH_FORMAT.format(health);
         String maxHealthString = HEALTH_FORMAT.format(maxHealth);
-        return new RawTextBuilder(String.valueOf(health)).setBold(true).setColor("red").toString();
+        String builtText = "";
+        ChatColor primaryColour = null;
+
+        switch (OofTracker.getConfiguration().getOrElse(ConfigKeys.HEALTH_BAR_VIEW_TYPE, HealthFormat.SQUARES)) {
+
+            case TEXT_MONO:
+                primaryColour = ChatColor.RED;
+            case TEXT:
+                if(primaryColour == null) primaryColour = getHealthColour(health, maxHealth);
+                break;
+
+
+            case BAR_MONO:
+                primaryColour = ChatColor.RED;
+            case BAR:
+                if(primaryColour == null) primaryColour = getHealthColour(health, maxHealth);
+                break;
+
+
+            case SQUARES_MONO:
+                primaryColour = ChatColor.RED;
+            default:
+            case SQUARES:
+                if(primaryColour == null) primaryColour = getHealthColour(health, maxHealth);
+                break;
+        }
+
+        return builtText;
+    }
+
+    private static ChatColor getHealthColour(double health, double maxHealth) {
+        double checkedMaxHealth = maxHealth > 0 ? maxHealth : 1; // Ensure maxHealth is not 0.
+        double fraction = health / checkedMaxHealth;
+
+        if (fraction >= THRESHOLD_HEALTHY) return ChatColor.GREEN;
+        if (fraction >= THRESHOLD_OKAY) return ChatColor.YELLOW;
+        if(fraction >= THRESHOLD_WOUNDED) return ChatColor.GOLD;
+
+        return ChatColor.RED; // Otherwise it's red cause it's below the threshold
     }
 }
