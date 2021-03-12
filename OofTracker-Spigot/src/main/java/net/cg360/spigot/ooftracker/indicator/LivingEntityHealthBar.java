@@ -206,6 +206,8 @@ public class LivingEntityHealthBar {
                     if(oldLocation.distance(lastLocation) > 8) { // Protocol insists changes of > 8 must teleport
                         PacketPlayOutEntityTeleport packetTeleport = new PacketPlayOutEntityTeleport();
 
+                        NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "a", fakeEntityID); // Entity ID
+
                         NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "b", lastLocation.getX()); // Pos X
                         NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "c", lastLocation.getY()); // Pos Y
                         NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "d", lastLocation.getZ()); // Pos Z
