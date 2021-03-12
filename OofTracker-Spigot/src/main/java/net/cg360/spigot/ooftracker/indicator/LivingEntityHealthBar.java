@@ -275,4 +275,34 @@ public class LivingEntityHealthBar {
 
         return ChatColor.RED; // Otherwise it's red cause it's below the threshold
     }
+
+    /**
+     * Generates the text string for "TEXT" variety health bars.
+     * @param primary the colour of the health. Colour is based on health if null.
+     * @param secondary the colour of the max health. Colour is based on health if null.
+     * @param health the entity's health.
+     * @param maxHealth the entity's max health
+     * @return the built Raw Text string.
+     */
+    private static String genTextFormat(ChatColor primary, ChatColor secondary, double health, double maxHealth) {
+        String healthString = HEALTH_FORMAT.format(health);
+        String maxHealthString = HEALTH_FORMAT.format(maxHealth);
+        ChatColor genColour = getHealthColour(health, maxHealth);
+
+        return new RawTextBuilder(healthString).setBold(true).setColor(primary == null ? genColour : primary)
+                .append(new RawTextBuilder(String.format(" / %s ♡", maxHealthString)).setColor(secondary == null ? genColour : secondary))
+                .toString();
+    }
+
+
+    private static ChatColor getHealthColour(double health, double maxHealth) {
+        double checkedMaxHealth = maxHealth > 0 ? maxHealth : 1; // Ensure maxHealth is not 0.
+        double fraction = health / checkedMaxHealth;
+
+        if (fraction >= THRESHOLD_HEALTHY) return ChatColor.GREEN;
+        if (fraction >= THRESHOLD_OKAY) return ChatColor.YELLOW;
+        if(fraction >= THRESHOLD_WOUNDED) return ChatColor.GOLD;
+
+        return ChatColor.RED; // Otherwise it's red cause it's below the threshold
+    }
 }
