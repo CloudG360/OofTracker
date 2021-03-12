@@ -146,8 +146,8 @@ public class HealthBarManager implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onEntityTransform(EntityTransformEvent event) { // Clear healthbars on transform
-        int entityID = event.getTransformedEntity().getEntityId();
+    public void onEntityTransform(EntityTransformEvent event) { // Clear original entity health-bars on transform
+        int entityID = event.getEntity().getEntityId();
 
         if(healthbars.containsKey(entityID)) {
             LivingEntityHealthBar hb = healthbars.get(entityID);
