@@ -58,12 +58,20 @@ public class LivingEntityHealthBar {
         double maxDistance = OofTracker.getConfiguration().getOrElse(ConfigKeys.HEALTH_BAR_VIEW_DISTANCE, 20d);
 
         if(p != hostEntity) { // Ensure the player, if they are the entity, are not visible.
-            double distance = p.getLocation().distance(hostEntity.getLocation());
+            boolean outOfRange;
+
+            if (p.getWorld().equals(hostEntity.getWorld())) {
+                double distance = p.getLocation().distance(hostEntity.getLocation());
+                outOfRange = (distance > maxDistance);
+            } else {
+                outOfRange = true;
+            }
+
             CraftPlayer cPlayer = (CraftPlayer) p;
 
             if(visibleToPlayers.contains(p)) {
 
-                if ((!visible) || (distance > maxDistance)) { // Isn't visible or the distance is now to large, remove
+                if ((!visible) || outOfRange) { // Isn't visible or the distance is now to large, remove
                     PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(fakeEntityID);
                     cPlayer.getHandle().playerConnection.sendPacket(destroyPacket);
                     visibleToPlayers.remove(p);
@@ -84,7 +92,7 @@ public class LivingEntityHealthBar {
 
             } else {
 
-                if (visible && (distance <= maxDistance)) { // Is visible + now within distance, add
+                if (visible && (!outOfRange)) { // Is visible + now within distance, add
                     visibleToPlayers.add(p);
                     PacketPlayOutSpawnEntityLiving addPacket = new PacketPlayOutSpawnEntityLiving(); // An armour stand is apparently living??
 
