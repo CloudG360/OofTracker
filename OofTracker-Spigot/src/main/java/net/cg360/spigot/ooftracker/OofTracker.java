@@ -4,6 +4,7 @@ import net.cg360.nsapi.commons.data.Settings;
 import net.cg360.spigot.ooftracker.indicator.bar.HealthBarManager;
 import net.cg360.spigot.ooftracker.indicator.bar.HealthFormat;
 import net.cg360.spigot.ooftracker.list.DamageStackManager;
+import net.cg360.spigot.ooftracker.particle.TextParticleManager;
 import net.cg360.spigot.ooftracker.processing.DamageProcessing;
 import net.cg360.spigot.ooftracker.processing.DeathBroadcastScope;
 import net.cg360.spigot.ooftracker.processing.builtin.DPDAttackedByEntity;
@@ -24,6 +25,7 @@ public final class OofTracker extends JavaPlugin implements Listener {
 
     private DamageStackManager damageStackManager;
     private HealthBarManager healthBarManager;
+    private TextParticleManager textParticleManager;
     private DamageProcessing damageProcessing;
 
     private YamlConfiguration configurationFile;
@@ -42,10 +44,15 @@ public final class OofTracker extends JavaPlugin implements Listener {
             this.damageStackManager = new DamageStackManager();
             this.damageProcessing = new DamageProcessing();
 
-            if(!Util.check(ConfigKeys.DAMAGE_LISTS_ONLY, false)) this.healthBarManager = new HealthBarManager();
-
             this.damageStackManager.setAsPrimaryManager();
-            if(!Util.check(ConfigKeys.DAMAGE_LISTS_ONLY, false)) this.healthBarManager.setAsPrimaryManager();
+
+            if(!Util.check(ConfigKeys.DAMAGE_LISTS_ONLY, false)) {
+                this.healthBarManager = new HealthBarManager();
+                this.textParticleManager = new TextParticleManager();
+
+                this.healthBarManager.setAsPrimaryManager();
+                this.textParticleManager.setAsPrimaryManager();
+            }
 
 
             // -- Register DamageProcessors --
@@ -54,7 +61,11 @@ public final class OofTracker extends JavaPlugin implements Listener {
 
             // -- Register listeners --
             this.getServer().getPluginManager().registerEvents(damageProcessing, this);
-            if(!Util.check(ConfigKeys.DAMAGE_LISTS_ONLY, false)) this.getServer().getPluginManager().registerEvents(healthBarManager, this);
+
+            if(!Util.check(ConfigKeys.DAMAGE_LISTS_ONLY, false)){
+                this.getServer().getPluginManager().registerEvents(healthBarManager, this);
+                this.getServer().getPluginManager().registerEvents(textParticleManager, this);
+            }
 
 
             // -- Register Commands --

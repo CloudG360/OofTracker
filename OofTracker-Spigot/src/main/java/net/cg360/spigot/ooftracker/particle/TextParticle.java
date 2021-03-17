@@ -321,6 +321,15 @@ public class TextParticle {
 
 
 
+    public ArrayList<Player> getVisibleToPlayers() { return new ArrayList<>(visibleToPlayers); }
+    public int getID() { return fakeEntityID; }
+    public int getAge() { return age; }
+    public int getRange() { return range; }
+    public boolean isSpawned() { return isSpawned; }
+    public String getParsedText() { return parsedText; }
+
+
+
     /** @return 3 ints using the protocol's velocity format. */
     public static int[] calculateNetworkVelocity(Vector motion) {
         double dX = MathHelper.a(motion.getX(), -3.9D, 3.9D) * 8000D; // I think this is a clamping function + multiply?
