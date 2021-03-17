@@ -38,7 +38,7 @@ public class LivingEntityHealthBar {
     protected boolean visible;
 
 
-    // Should only be instantiated from the HealthBarManager
+    // Should only be instantiated from the HealthIndicatorManager
     protected LivingEntityHealthBar(LivingEntity host) {
         this.lastLocation = new Location(host.getWorld(), 0, 0, 0, 0, 0);
         this.hostEntity = host;

@@ -1,7 +1,7 @@
 package net.cg360.spigot.ooftracker;
 
 import net.cg360.nsapi.commons.data.Settings;
-import net.cg360.spigot.ooftracker.indicator.bar.HealthBarManager;
+import net.cg360.spigot.ooftracker.indicator.bar.HealthIndicatorManager;
 import net.cg360.spigot.ooftracker.indicator.bar.HealthFormat;
 import net.cg360.spigot.ooftracker.list.DamageStackManager;
 import net.cg360.spigot.ooftracker.particle.TextParticleManager;
@@ -24,7 +24,7 @@ public final class OofTracker extends JavaPlugin implements Listener {
     private static boolean isRunning = false;
 
     private DamageStackManager damageStackManager;
-    private HealthBarManager healthBarManager;
+    private HealthIndicatorManager healthIndicatorManager;
     private TextParticleManager textParticleManager;
     private DamageProcessing damageProcessing;
 
@@ -47,10 +47,10 @@ public final class OofTracker extends JavaPlugin implements Listener {
             this.damageStackManager.setAsPrimaryManager();
 
             if(!Util.check(ConfigKeys.DAMAGE_LISTS_ONLY, false)) {
-                this.healthBarManager = new HealthBarManager();
+                this.healthIndicatorManager = new HealthIndicatorManager();
                 this.textParticleManager = new TextParticleManager();
 
-                this.healthBarManager.setAsPrimaryManager();
+                this.healthIndicatorManager.setAsPrimaryManager();
                 this.textParticleManager.setAsPrimaryManager();
             }
 
@@ -63,7 +63,7 @@ public final class OofTracker extends JavaPlugin implements Listener {
             this.getServer().getPluginManager().registerEvents(damageProcessing, this);
 
             if(!Util.check(ConfigKeys.DAMAGE_LISTS_ONLY, false)){
-                this.getServer().getPluginManager().registerEvents(healthBarManager, this);
+                this.getServer().getPluginManager().registerEvents(healthIndicatorManager, this);
                 this.getServer().getPluginManager().registerEvents(textParticleManager, this);
             }
 
@@ -133,7 +133,7 @@ public final class OofTracker extends JavaPlugin implements Listener {
     public static boolean isRunning() { return isRunning; }
 
     public static DamageStackManager getDamageStackManager() { return get().damageStackManager; }
-    public static HealthBarManager getHealthBarManager() { return get().healthBarManager; }
+    public static HealthIndicatorManager getHealthBarManager() { return get().healthIndicatorManager; }
     public static DamageProcessing getDamageProcessingManager() { return get().damageProcessing; }
 
     public static Settings getConfiguration() { return get().configuration; }

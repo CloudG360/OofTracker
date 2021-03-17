@@ -71,7 +71,7 @@ public class TextParticleManager implements Listener {
 
 
 
-    /** @return the primary instance of the HealthBarManager. */
+    /** @return the primary instance of the TextParticleManager. */
     public static TextParticleManager get(){
         return primaryManager;
     }

@@ -17,14 +17,14 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
 
-public class HealthBarManager implements Listener {
+public class HealthIndicatorManager implements Listener {
 
-    private static HealthBarManager primaryManager;
+    private static HealthIndicatorManager primaryManager;
 
     protected HashMap<Integer, LivingEntityHealthBar> healthbars; // OwnerID: Healthbar
     protected HashMap<Integer, Long> lastDamageMillis;
 
-    public HealthBarManager() {
+    public HealthIndicatorManager() {
         this.healthbars = new HashMap<>();
         this.lastDamageMillis = new HashMap<>();
 
@@ -40,7 +40,7 @@ public class HealthBarManager implements Listener {
     }
 
     /**
-     * Sets the manager the result provided from HealthBarManager#get() and
+     * Sets the manager the result provided from HealthIndicatorManager#get() and
      * finalizes the instance to an extent.
      *
      * Cannot be changed once initially called.
@@ -199,8 +199,8 @@ public class HealthBarManager implements Listener {
         }
     }
 
-    /** @return the primary instance of the HealthBarManager. */
-    public static HealthBarManager get(){
+    /** @return the primary instance of the HealthIndicatorManager. */
+    public static HealthIndicatorManager get(){
         return primaryManager;
     }
 
