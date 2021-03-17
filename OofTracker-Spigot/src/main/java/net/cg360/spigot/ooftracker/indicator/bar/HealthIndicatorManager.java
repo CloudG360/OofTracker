@@ -93,6 +93,7 @@ public class HealthIndicatorManager implements Listener {
 
         Vector initial = new Vector(randX, 0d, randZ);
         initial.normalize();
+        initial.multiply(0.15d); // Shouldn't go crazy far :')
         initial.add(new Vector(0d, 0.3d, 0d));
 
         //TODO: Configurables.
