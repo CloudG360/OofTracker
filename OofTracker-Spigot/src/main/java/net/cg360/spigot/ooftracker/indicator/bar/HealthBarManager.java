@@ -13,6 +13,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityTransformEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
 
@@ -177,6 +178,24 @@ public class HealthBarManager implements Listener {
         for(LivingEntityHealthBar hb: healthbars.values()) {
             AttributeInstance maxHealth = hb.hostEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
             hb.updatePlayerDisplay(event.getPlayer(), hb.hostEntity.getHealth(), maxHealth == null ? 1 : maxHealth.getValue());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        int entityID = event.getPlayer().getEntityId();
+
+        // If true, invalidate and remove.
+        if(healthbars.containsKey(entityID)) {
+            LivingEntityHealthBar hb = healthbars.get(entityID);
+            hb.visible = false;
+            hb.updateDisplayForViewers(0, 1);
+
+            healthbars.remove(entityID);
+        }
+
+        for(LivingEntityHealthBar hb: healthbars.values()) {
+            hb.removePlayer(event.getPlayer());
         }
     }
 

@@ -248,6 +248,20 @@ public class LivingEntityHealthBar {
         }
     }
 
+    /**
+     * Removes the client-side healthbar fake entity from the player.
+     * @return true if the healthbar was removed.
+     */
+    public boolean removePlayer(Player player) {
+
+        if(visibleToPlayers.remove(player)) {
+            PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(fakeEntityID);
+            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(destroyPacket);
+            return true;
+        }
+        return false;
+    }
+
     public double getDisplayYCoordinate() {
         double hostY = hostEntity.getBoundingBox().getMaxY();
         double offset = OofTracker.getConfiguration().getOrElse(ConfigKeys.HEALTH_BAR_OFFSET, 0.3d);
