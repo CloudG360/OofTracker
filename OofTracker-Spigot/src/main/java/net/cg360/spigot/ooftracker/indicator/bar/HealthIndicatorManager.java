@@ -2,6 +2,7 @@ package net.cg360.spigot.ooftracker.indicator.bar;
 
 import net.cg360.spigot.ooftracker.ConfigKeys;
 import net.cg360.spigot.ooftracker.OofTracker;
+import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.LivingEntity;
@@ -15,14 +16,21 @@ import org.bukkit.event.entity.EntityTransformEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 
 public class HealthIndicatorManager implements Listener {
 
     private static HealthIndicatorManager primaryManager;
 
+    public static final DecimalFormat HEALTH_FORMAT = new DecimalFormat("0.0");
+    public static final double THRESHOLD_HEALTHY = 0.85d; // > = green
+    public static final double THRESHOLD_OKAY = 0.6d; // > = yellow
+    public static final double THRESHOLD_WOUNDED = 0.25d; // > = orange | < = red
+
     protected HashMap<Integer, LivingEntityHealthBar> healthbars; // OwnerID: Healthbar
     protected HashMap<Integer, Long> lastDamageMillis;
+
 
     public HealthIndicatorManager() {
         this.healthbars = new HashMap<>();
@@ -197,6 +205,20 @@ public class HealthIndicatorManager implements Listener {
         for(LivingEntityHealthBar hb: healthbars.values()) {
             hb.removePlayer(event.getPlayer());
         }
+    }
+
+
+
+
+    public static ChatColor getHealthColour(double health, double maxHealth) {
+        double checkedMaxHealth = maxHealth > 0 ? maxHealth : 1; // Ensure maxHealth is not 0.
+        double fraction = health / checkedMaxHealth;
+
+        if (fraction >= THRESHOLD_HEALTHY) return ChatColor.GREEN;
+        if (fraction >= THRESHOLD_OKAY) return ChatColor.YELLOW;
+        if(fraction >= THRESHOLD_WOUNDED) return ChatColor.GOLD;
+
+        return ChatColor.RED; // Otherwise it's red cause it's below the threshold
     }
 
     /** @return the primary instance of the HealthIndicatorManager. */

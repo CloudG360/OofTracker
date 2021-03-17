@@ -23,11 +23,6 @@ import java.util.UUID;
 
 public class LivingEntityHealthBar {
 
-    public static final DecimalFormat HEALTH_FORMAT = new DecimalFormat("0.0");
-    public static final double THRESHOLD_HEALTHY = 0.85d; // > = green
-    public static final double THRESHOLD_OKAY = 0.6d; // > = yellow
-    public static final double THRESHOLD_WOUNDED = 0.25d; // > = orange | < = red
-
     protected Location lastLocation;
     protected LivingEntity hostEntity;
     protected ArrayList<Player> visibleToPlayers;
@@ -349,9 +344,9 @@ public class LivingEntityHealthBar {
      * @return the built Raw Text string.
      */
     private static String genTextFormat(ChatColor primary, ChatColor secondary, double health, double maxHealth) {
-        String healthString = HEALTH_FORMAT.format(health);
-        String maxHealthString = HEALTH_FORMAT.format(maxHealth);
-        ChatColor genColour = getHealthColour(health, maxHealth);
+        String healthString = HealthIndicatorManager.HEALTH_FORMAT.format(health);
+        String maxHealthString = HealthIndicatorManager.HEALTH_FORMAT.format(maxHealth);
+        ChatColor genColour = HealthIndicatorManager.getHealthColour(health, maxHealth);
 
         return new RawTextBuilder(healthString).setBold(true).setColor(primary == null ? genColour : primary)
                 .append(new RawTextBuilder(String.format(" / %s \u2661", maxHealthString)).setColor(secondary == null ? genColour : secondary))
@@ -366,9 +361,9 @@ public class LivingEntityHealthBar {
      * @return the built Raw Text string.
      */
     private static String genSquaresFormat(ChatColor primary, double health, double maxHealth, boolean includeText) {
-        String healthString = HEALTH_FORMAT.format(health);
-        String maxHealthString = HEALTH_FORMAT.format(maxHealth);
-        ChatColor barColour = primary == null ? getHealthColour(health, maxHealth) : primary;
+        String healthString = HealthIndicatorManager.HEALTH_FORMAT.format(health);
+        String maxHealthString = HealthIndicatorManager.HEALTH_FORMAT.format(maxHealth);
+        ChatColor barColour = primary == null ? HealthIndicatorManager.getHealthColour(health, maxHealth) : primary;
 
         double checkedMaxHealth = maxHealth > 0 ? maxHealth : 1; // Ensure maxHealth is not 0.
         double healthFraction = health / checkedMaxHealth;
@@ -402,9 +397,9 @@ public class LivingEntityHealthBar {
      * @return the built Raw Text string.
      */
     private static String genBarFormat(ChatColor primary, ChatColor secondary, double health, double maxHealth, boolean includeText) {
-        String healthString = HEALTH_FORMAT.format(health);
-        String maxHealthString = HEALTH_FORMAT.format(maxHealth);
-        ChatColor barColour = primary == null ? getHealthColour(health, maxHealth) : primary;
+        String healthString = HealthIndicatorManager.HEALTH_FORMAT.format(health);
+        String maxHealthString = HealthIndicatorManager.HEALTH_FORMAT.format(maxHealth);
+        ChatColor barColour = primary == null ? HealthIndicatorManager.getHealthColour(health, maxHealth) : primary;
         ChatColor barEmptyColour = secondary == null ? ChatColor.GRAY : secondary;
 
         double checkedMaxHealth = maxHealth > 0 ? maxHealth : 1; // Ensure maxHealth is not 0.
@@ -433,17 +428,5 @@ public class LivingEntityHealthBar {
         } else {
             return barBuilder.toString(); // The bar will be enough.
         }
-    }
-
-
-    private static ChatColor getHealthColour(double health, double maxHealth) {
-        double checkedMaxHealth = maxHealth > 0 ? maxHealth : 1; // Ensure maxHealth is not 0.
-        double fraction = health / checkedMaxHealth;
-
-        if (fraction >= THRESHOLD_HEALTHY) return ChatColor.GREEN;
-        if (fraction >= THRESHOLD_OKAY) return ChatColor.YELLOW;
-        if(fraction >= THRESHOLD_WOUNDED) return ChatColor.GOLD;
-
-        return ChatColor.RED; // Otherwise it's red cause it's below the threshold
     }
 }
