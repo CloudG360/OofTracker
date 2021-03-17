@@ -93,8 +93,12 @@ public class TextParticle {
             }
 
             OofTracker.get().getServer().getScheduler().scheduleSyncRepeatingTask(OofTracker.get(), () -> {
-                physicsTick();
-                updateMotionForViewers();
+
+                if(OofTracker.isRunning()) {
+                    physicsTick();
+                    updateMotionForViewers();
+                }
+
             }, 1, 1);
             return true;
         }
