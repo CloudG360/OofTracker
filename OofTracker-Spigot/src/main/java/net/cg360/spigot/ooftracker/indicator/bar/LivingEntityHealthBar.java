@@ -201,7 +201,9 @@ public class LivingEntityHealthBar {
             for (Player player : visibleToPlayers) {
 
                 try {
-                    PacketPlayOutEntityVelocity packetVelocity = new PacketPlayOutEntityVelocity(fakeEntityID, new Vec3D(lastLocation.getX(), lastLocation.getY(), lastLocation.getZ()));
+                    PacketPlayOutEntityVelocity packetVelocity = new PacketPlayOutEntityVelocity(fakeEntityID,
+                            new Vec3D(hostEntity.getVelocity().getX(), hostEntity.getVelocity().getY(), hostEntity.getVelocity().getZ())
+                    );
 
                     if(oldLocation.distance(lastLocation) > 8) { // Protocol insists changes of > 8 must teleport
                         PacketPlayOutEntityTeleport packetTeleport = new PacketPlayOutEntityTeleport();
