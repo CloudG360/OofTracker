@@ -112,7 +112,10 @@ public class TextParticle {
                     }
                     this.cancel();
                 }
+
             }.runTaskTimer(OofTracker.get(), 1, 1);
+
+            TextParticleManager.get().addParticle(this);
             return true;
         }
         return false;
@@ -124,6 +127,7 @@ public class TextParticle {
     public void kill() {
 
         if(isSpawned) {
+            TextParticleManager.get().removeParticle(this);
             this.isSpawned = false;
             this.age = -1;
 
