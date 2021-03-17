@@ -65,13 +65,13 @@ public class TextParticle {
                 startingPosition.getYaw(),
                 startingPosition.getPitch());
         this.velocity = initialVelocity == null ?
-                new Vector(0d, 1.5d, 0d) :
+                new Vector(0d, 0.2d, 0d) :
                 new Vector(initialVelocity.getX(), initialVelocity.getY(), initialVelocity.getZ());
         this.acceleration = acceleration == null ?
-                new Vector(0d, -0.1d, 0d) :
+                new Vector(0d, -0.05d, 0d) :
                 new Vector(acceleration.getX(), acceleration.getY(), acceleration.getZ());
         this.terminalVelocity = terminalVelocity == null ?
-                new Vector(2d, 2d, 2d) :
+                new Vector(2d, 1.5d, 2d) :
                 new Vector(Math.abs(terminalVelocity.getX()), Math.abs(terminalVelocity.getX()), Math.abs(terminalVelocity.getX()));
 
         this.range = range > 0 ? range : 1;
