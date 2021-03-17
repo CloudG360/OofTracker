@@ -10,6 +10,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -86,23 +87,50 @@ public class TextParticle {
      * @return true if the particle was spawned.
      */
     public boolean spawn() {
-        if (!isSpawned) {
+        if ((!isSpawned) && (age > 0)) {
 
             for(Player player: world.getPlayers()) {
                 if(withinRangeCheck(player)) sendParticleToPlayer(player); // Send to players within range.
             }
 
-            OofTracker.get().getServer().getScheduler().scheduleSyncRepeatingTask(OofTracker.get(), () -> {
+            new BukkitRunnable() {
 
-                if(OofTracker.isRunning()) {
-                    physicsTick();
-                    updateMotionForViewers();
+                @Override
+                public void run() {
+
+                    if(OofTracker.isRunning()){
+                        age--;
+
+                        if(age < 0) {
+                            kill(); // Ensure it's dead
+                            this.cancel();
+                            return;
+                        }
+                        physicsTick();
+                        updateMotionForViewers();
+                        return;
+                    }
+                    this.cancel();
                 }
-
-            }, 1, 1);
+            }.runTaskTimer(OofTracker.get(), 1, 1);
             return true;
         }
         return false;
+    }
+
+    /**
+     * Kills the particle, preventing it from spawning again.
+     */
+    public void kill() {
+
+        if(isSpawned) {
+            this.isSpawned = false;
+            this.age = -1;
+
+            for(Player player: new ArrayList<>(visibleToPlayers)) {
+                despawnFromPlayer(player);
+            }
+        }
     }
 
     /**
@@ -114,6 +142,21 @@ public class TextParticle {
     public boolean spawnToPlayer(Player player) {
         if(!isSpawned) spawn(); // Spawn to normal players if not visible.
         return sendParticleToPlayer(player); // This checks if it's already been spawned. Don't worry.
+    }
+
+    /**
+     * Removes the client-side TextParticle for the player.
+     * @param player the client to have the particle removed from.
+     * @return true if the particle was removed.
+     */
+    public boolean despawnFromPlayer(Player player) {
+
+        if(visibleToPlayers.remove(player)) {
+            PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(fakeEntityID);
+            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(destroyPacket);
+            return true;
+        }
+        return false;
     }
 
 
