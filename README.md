@@ -18,7 +18,7 @@ _These were added early on in development. Most of these are in 1.0._
   - [x] Ping on kill/assist.
 - [x] Visual Health-bars
   - [x] A variety of options? :O
-- [ ] Damage indicators (Particle-like Text appearing after each hit)
+- [x] Damage indicators (Particle-like Text appearing after each hit)
 - [ ] In-Chat log viewing.
   - Post PvP, this may be nice to check.
 
