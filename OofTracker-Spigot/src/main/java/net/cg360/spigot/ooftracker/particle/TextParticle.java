@@ -88,6 +88,7 @@ public class TextParticle {
      */
     public boolean spawn() {
         if ((!isSpawned) && (age > 0)) {
+            this.isSpawned = true;
 
             for(Player player: world.getPlayers()) {
                 if(withinRangeCheck(player)) sendParticleToPlayer(player); // Send to players within range.
