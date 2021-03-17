@@ -18,9 +18,11 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityTransformEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.util.Vector;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.Random;
 
 public class HealthIndicatorManager implements Listener {
 
@@ -85,8 +87,16 @@ public class HealthIndicatorManager implements Listener {
         Location eye = host.getEyeLocation();
         Location loc = new Location(host.getWorld(), eye.getX(), eye.getY(), eye.getZ(), 0, 0);
 
+        Random random = new Random();
+        double randX = (random.nextDouble() * 2) - 1d;
+        double randZ = (random.nextDouble() * 2) - 1d;
+
+        Vector initial = new Vector(randX, 0d, randZ);
+        initial.normalize();
+        initial.add(new Vector(0d, 0.3d, 0d));
+
         //TODO: Configurables.
-        TextParticle particle = new TextParticle(text, loc, null, null, null, 60, 20);
+        TextParticle particle = new TextParticle(text, loc, initial, null, null, 60, 20);
         particle.spawn();
     }
 
