@@ -86,7 +86,7 @@ public class HealthIndicatorManager implements Listener {
         Location loc = new Location(host.getWorld(), eye.getX(), eye.getY(), eye.getZ(), 0, 0);
 
         //TODO: Configurables.
-        TextParticle particle = new TextParticle(text, loc, null, null, null, 100, 20);
+        TextParticle particle = new TextParticle(text, loc, null, null, null, 60, 20);
         particle.spawn();
     }
 
