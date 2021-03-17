@@ -134,9 +134,10 @@ public class HealthIndicatorManager implements Listener {
             }
 
             AttributeInstance maxHealth = living.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+            double mHealth = maxHealth == null ? 1d : maxHealth.getValue();
             LivingEntityHealthBar health = this.healthbars.get(entityID); // If this fails, hOW??
             health.visible = true; // Set visible and update.
-            health.updateDisplayForWorld(living.getHealth() + event.getAmount(), maxHealth == null ? 1d : maxHealth.getValue());
+            health.updateDisplayForWorld(Math.min(living.getHealth() + event.getAmount(), mHealth), mHealth);
 
             OofTracker.get().getServer().getScheduler().scheduleSyncDelayedTask(OofTracker.get(), () -> {
 
