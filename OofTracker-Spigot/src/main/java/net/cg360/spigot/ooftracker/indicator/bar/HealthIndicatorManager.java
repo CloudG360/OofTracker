@@ -2,7 +2,10 @@ package net.cg360.spigot.ooftracker.indicator.bar;
 
 import net.cg360.spigot.ooftracker.ConfigKeys;
 import net.cg360.spigot.ooftracker.OofTracker;
+import net.cg360.spigot.ooftracker.nms.RawTextBuilder;
+import net.cg360.spigot.ooftracker.particle.TextParticle;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.LivingEntity;
@@ -77,6 +80,16 @@ public class HealthIndicatorManager implements Listener {
         }
     }
 
+    // Handles velocity + all the other non-display settings.
+    protected void spawnHealthParticle(RawTextBuilder text, LivingEntity host) {
+        Location eye = host.getEyeLocation();
+        Location loc = new Location(host.getWorld(), eye.getX(), eye.getY(), eye.getZ(), 0, 0);
+
+        //TODO: Configurables.
+        TextParticle particle = new TextParticle(text, loc, null, null, null, 100, 20);
+        particle.spawn();
+    }
+
 
 
     //TODO: Use the custom damage event triggered by DamageProcessing#onEntityDamage() when added.
@@ -101,6 +114,12 @@ public class HealthIndicatorManager implements Listener {
                 LivingEntityHealthBar health = this.healthbars.get(entityID); // If this fails, hOW??
                 health.visible = true; // Set visible and update.
                 health.updateDisplayForWorld(living.getHealth() - event.getFinalDamage(), maxHealth == null ? 1d : maxHealth.getValue());
+
+                String healthString = HEALTH_FORMAT.format(event.getFinalDamage());
+                RawTextBuilder builder = new RawTextBuilder(healthString).setBold(true).setColor(ChatColor.RED)
+                        .append(new RawTextBuilder("\u2661").setColor(ChatColor.DARK_RED));
+
+                spawnHealthParticle(builder, living);
 
                 OofTracker.get().getServer().getScheduler().scheduleSyncDelayedTask(OofTracker.get(), () -> {
 
@@ -138,6 +157,12 @@ public class HealthIndicatorManager implements Listener {
             LivingEntityHealthBar health = this.healthbars.get(entityID); // If this fails, hOW??
             health.visible = true; // Set visible and update.
             health.updateDisplayForWorld(Math.min(living.getHealth() + event.getAmount(), mHealth), mHealth);
+
+            String healthString = HEALTH_FORMAT.format(event.getAmount());
+            RawTextBuilder builder = new RawTextBuilder(healthString).setBold(true).setColor(ChatColor.GREEN)
+                    .append(new RawTextBuilder("\u2661").setColor(ChatColor.DARK_GREEN));
+
+            spawnHealthParticle(builder, living);
 
             OofTracker.get().getServer().getScheduler().scheduleSyncDelayedTask(OofTracker.get(), () -> {
 
