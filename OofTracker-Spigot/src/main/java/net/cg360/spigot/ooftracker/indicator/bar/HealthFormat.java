@@ -1,4 +1,4 @@
-package net.cg360.spigot.ooftracker.indicator;
+package net.cg360.spigot.ooftracker.indicator.bar;
 
 public enum HealthFormat {
 

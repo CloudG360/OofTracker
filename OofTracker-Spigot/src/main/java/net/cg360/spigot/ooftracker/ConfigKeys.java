@@ -1,7 +1,7 @@
 package net.cg360.spigot.ooftracker;
 
 import net.cg360.nsapi.commons.data.keyvalue.Key;
-import net.cg360.spigot.ooftracker.indicator.HealthFormat;
+import net.cg360.spigot.ooftracker.indicator.bar.HealthFormat;
 import net.cg360.spigot.ooftracker.processing.DeathBroadcastScope;
 
 public final class ConfigKeys {

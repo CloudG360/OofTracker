@@ -1,4 +1,4 @@
-package net.cg360.spigot.ooftracker.indicator;
+package net.cg360.spigot.ooftracker.indicator.bar;
 
 import net.cg360.spigot.ooftracker.ConfigKeys;
 import net.cg360.spigot.ooftracker.OofTracker;
@@ -13,7 +13,6 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityTransformEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.HashMap;
 

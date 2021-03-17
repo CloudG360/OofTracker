@@ -1,9 +1,8 @@
 package net.cg360.spigot.ooftracker;
 
 import net.cg360.nsapi.commons.data.Settings;
-import net.cg360.spigot.ooftracker.command.CommandDebug;
-import net.cg360.spigot.ooftracker.indicator.HealthBarManager;
-import net.cg360.spigot.ooftracker.indicator.HealthFormat;
+import net.cg360.spigot.ooftracker.indicator.bar.HealthBarManager;
+import net.cg360.spigot.ooftracker.indicator.bar.HealthFormat;
 import net.cg360.spigot.ooftracker.list.DamageStackManager;
 import net.cg360.spigot.ooftracker.processing.DamageProcessing;
 import net.cg360.spigot.ooftracker.processing.DeathBroadcastScope;
