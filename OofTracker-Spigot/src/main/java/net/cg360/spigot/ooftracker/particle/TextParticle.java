@@ -1,20 +1,19 @@
-package net.cg360.spigot.ooftracker.indicator.particle;
+package net.cg360.spigot.ooftracker.particle;
 
-import net.cg360.nsapi.commons.Utility;
 import net.cg360.spigot.ooftracker.OofTracker;
-import net.cg360.spigot.ooftracker.Util;
-import net.cg360.spigot.ooftracker.indicator.bar.LivingEntityHealthBar;
 import net.cg360.spigot.ooftracker.nms.NMS;
 import net.cg360.spigot.ooftracker.nms.RawTextBuilder;
 import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftLivingEntity;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,6 +25,7 @@ public class TextParticle {
     protected int fakeEntityID;
     protected UUID fakeEntityUUID;
     protected World world;
+    protected Location lastPosition;
     protected Location position;
 
     protected Vector velocity;
@@ -39,6 +39,7 @@ public class TextParticle {
     protected String parsedText;
 
 
+    // Unlike LivingEntityHealthBar, there's less control over viewers. They are only despawned on a dimension transfer.
     public TextParticle(RawTextBuilder text, Location startingPosition, Vector initialVelocity, Vector acceleration, Vector terminalVelocity, int lifespan, int range) {
         this.visibleToPlayers = new ArrayList<>();
 
@@ -48,6 +49,13 @@ public class TextParticle {
         this.fakeEntityID = NMS.getNewEntityID(); // Steal right from under NMS's nose :)
         this.fakeEntityUUID = UUID.randomUUID();
         this.world = startingPosition.getWorld(); // doing this to shut up possible-NPE warnings.
+        this.lastPosition = new Location(
+                startingPosition.getWorld(),
+                startingPosition.getX(),
+                startingPosition.getY(),
+                startingPosition.getZ(),
+                startingPosition.getYaw(),
+                startingPosition.getPitch());
         this.position = new Location(
                 startingPosition.getWorld(),
                 startingPosition.getX(),
@@ -84,7 +92,10 @@ public class TextParticle {
                 if(withinRangeCheck(player)) sendParticleToPlayer(player); // Send to players within range.
             }
 
-            OofTracker.get().getServer().getScheduler().scheduleSyncRepeatingTask(OofTracker.get(), this::physicsTick, 1, 1);
+            OofTracker.get().getServer().getScheduler().scheduleSyncRepeatingTask(OofTracker.get(), () -> {
+                physicsTick();
+                updateMotionForViewers();
+            }, 1, 1);
             return true;
         }
         return false;
@@ -114,7 +125,62 @@ public class TextParticle {
         velocity.setY(Math.min(Math.max(velocity.getY(), -terminalVelocity.getY()), terminalVelocity.getY()));
         velocity.setZ(Math.min(Math.max(velocity.getZ(), -terminalVelocity.getZ()), terminalVelocity.getZ()));
 
+        lastPosition = new Location(position.getWorld(), position.getX(), position.getY(), position.getZ(), position.getYaw(), position.getPitch());
         position.add(velocity);
+    }
+
+    /**
+     * Updates the location of the client-side TextParticle entity.
+     */
+    protected void updateMotionForViewers() {
+        // World doesn't change for this entity. No need to check.
+        for (Player player : visibleToPlayers) {
+
+            try {
+                PacketPlayOutEntityVelocity packetVelocity = new PacketPlayOutEntityVelocity(fakeEntityID, new Vec3D(velocity.getX(), velocity.getY(), velocity.getZ()));
+
+                if(lastPosition.distance(position) > 8) { // Protocol insists changes of > 8 must teleport
+                    PacketPlayOutEntityTeleport packetTeleport = new PacketPlayOutEntityTeleport();
+
+                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "a", fakeEntityID); // Entity ID
+
+                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "b", position.getX()); // Pos X
+                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "c", position.getY()); // Pos Y
+                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "d", position.getZ()); // Pos Z
+
+                    int yaw = (int) (position.getYaw() * 256.0F / 360.0F);
+                    int pitch = (int) (position.getPitch() * 256.0F / 360.0F);
+                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "e", (byte) yaw); // Y rot (Yaw)
+                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "f", (byte) pitch); // X rot (Pitch)
+
+                    NMS.setClassField(PacketPlayOutEntityTeleport.class, packetTeleport, "g", false); //On Ground?
+
+                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packetTeleport);
+
+                } else {
+                    short deltaX = (short) ((position.getX() * 32 - lastPosition.getX() * 32) * 128);
+                    short deltaY = (short) ((position.getY() * 32 - lastPosition.getY() * 32) * 128);
+                    short deltaZ = (short) ((position.getZ() * 32 - lastPosition.getZ() * 32) * 128);
+                    PacketPlayOutEntity.PacketPlayOutRelEntityMove packetMove =
+                            new PacketPlayOutEntity.PacketPlayOutRelEntityMove(fakeEntityID, deltaX, deltaY, deltaZ, false); // Love how hidden this is.
+
+                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packetMove);
+                }
+
+                ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packetVelocity);
+
+            } catch (NoSuchFieldException err) {
+                OofTracker.getLog().severe("Error building packet. - No field! Is this the wrong version?");
+                err.printStackTrace();
+                return;
+
+            } catch (IllegalAccessException err) {
+                OofTracker.getLog().severe("Error building packet - Can't access field! Is something misconfigured?");
+                err.printStackTrace();
+                return;
+
+            }
+        }
     }
 
 
@@ -186,20 +252,6 @@ public class TextParticle {
                 return false;
 
             }
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Removes the client-side particle entity from the player.
-     * @return true if the particle was removed.
-     */
-    private boolean removeParticleForPlayer(Player player) {
-
-        if(visibleToPlayers.remove(player)) {
-            PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(fakeEntityID);
-            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(destroyPacket);
             return true;
         }
         return false;
