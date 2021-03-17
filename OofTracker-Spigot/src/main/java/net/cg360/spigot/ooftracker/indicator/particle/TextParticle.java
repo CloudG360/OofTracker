@@ -1,5 +1,9 @@
 package net.cg360.spigot.ooftracker.indicator.particle;
 
+import net.cg360.nsapi.commons.Utility;
+import net.cg360.spigot.ooftracker.OofTracker;
+import net.cg360.spigot.ooftracker.Util;
+import net.cg360.spigot.ooftracker.indicator.bar.LivingEntityHealthBar;
 import net.cg360.spigot.ooftracker.nms.NMS;
 import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.Location;
@@ -19,7 +23,10 @@ public class TextParticle {
     protected UUID fakeEntityUUID;
     protected World world;
     protected Location position;
+
     protected Vector velocity;
+    protected Vector acceleration;
+    protected Vector terminalVelocity;
 
     protected int age;
     protected int range;
@@ -28,7 +35,7 @@ public class TextParticle {
     protected String text;
 
 
-    public TextParticle(String text, Location startingPosition, Vector initialVelocity, int lifespan, int range) {
+    public TextParticle(String text, Location startingPosition, Vector initialVelocity, Vector acceleration, Vector terminalVelocity, int lifespan, int range) {
         this.visibleToPlayers = new ArrayList<>();
 
         if(startingPosition == null) throw new IllegalArgumentException("Starting position must not be null.");
@@ -44,7 +51,15 @@ public class TextParticle {
                 startingPosition.getZ(),
                 startingPosition.getYaw(),
                 startingPosition.getPitch());
-        this.velocity = new Vector(initialVelocity.getX(), initialVelocity.getY(), initialVelocity.getZ());
+        this.velocity = initialVelocity == null ?
+                new Vector(0d, 1.5d, 0d) :
+                new Vector(initialVelocity.getX(), initialVelocity.getY(), initialVelocity.getZ());
+        this.acceleration = acceleration == null ?
+                new Vector(0d, -0.1d, 0d) :
+                new Vector(acceleration.getX(), acceleration.getY(), acceleration.getZ());
+        this.terminalVelocity = terminalVelocity == null ?
+                new Vector(2d, 2d, 2d) :
+                new Vector(Math.abs(terminalVelocity.getX()), Math.abs(terminalVelocity.getX()), Math.abs(terminalVelocity.getX()));
 
         this.range = range > 0 ? range : 1;
         this.age = lifespan > 0 ? lifespan : 1; // Ensure the lifespan is actually long enough.
@@ -65,6 +80,7 @@ public class TextParticle {
                 if(withinRangeCheck(player)) sendParticleToPlayer(player); // Send to players within range.
             }
 
+            OofTracker.get().getServer().getScheduler().scheduleSyncRepeatingTask(OofTracker.get(), this::physicsTick, 1, 1);
             return true;
         }
         return false;
@@ -80,6 +96,24 @@ public class TextParticle {
         if(!isSpawned) spawn(); // Spawn to normal players if not visible.
         return sendParticleToPlayer(player); // This checks if it's already been spawned. Don't worry.
     }
+
+
+
+    /**
+     * Ran every tick to update the particle's position and velocity.
+     */
+    protected void physicsTick() {
+        velocity.add(acceleration);
+
+        // Ensure velocity is not at terminal velocity.
+        velocity.setX(Math.min(Math.max(velocity.getX(), -terminalVelocity.getX()), terminalVelocity.getX()));
+        velocity.setY(Math.min(Math.max(velocity.getY(), -terminalVelocity.getY()), terminalVelocity.getY()));
+        velocity.setZ(Math.min(Math.max(velocity.getZ(), -terminalVelocity.getZ()), terminalVelocity.getZ()));
+
+        position.add(velocity);
+    }
+
+
 
     /**
      * Spawns the TextParticle fake armourstand on the client
