@@ -68,7 +68,7 @@ public class TextParticle {
                 new Vector(0d, 0.3d, 0d) :
                 new Vector(initialVelocity.getX(), initialVelocity.getY(), initialVelocity.getZ());
         this.acceleration = acceleration == null ?
-                new Vector(0d, -0.03d, 0d) :
+                new Vector(0d, -0.05d, 0d) :
                 new Vector(acceleration.getX(), acceleration.getY(), acceleration.getZ());
         this.terminalVelocity = terminalVelocity == null ?
                 new Vector(1.2d, 1.2d, 1.2d) :
