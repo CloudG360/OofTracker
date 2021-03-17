@@ -5,13 +5,17 @@ import net.cg360.spigot.ooftracker.OofTracker;
 import net.cg360.spigot.ooftracker.Util;
 import net.cg360.spigot.ooftracker.indicator.bar.LivingEntityHealthBar;
 import net.cg360.spigot.ooftracker.nms.NMS;
+import net.cg360.spigot.ooftracker.nms.RawTextBuilder;
 import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 
 // This could probably get a cross-platform utility class in NSAPI Commons.
@@ -32,10 +36,10 @@ public class TextParticle {
     protected int range;
     protected boolean isSpawned;
 
-    protected String text;
+    protected String parsedText;
 
 
-    public TextParticle(String text, Location startingPosition, Vector initialVelocity, Vector acceleration, Vector terminalVelocity, int lifespan, int range) {
+    public TextParticle(RawTextBuilder text, Location startingPosition, Vector initialVelocity, Vector acceleration, Vector terminalVelocity, int lifespan, int range) {
         this.visibleToPlayers = new ArrayList<>();
 
         if(startingPosition == null) throw new IllegalArgumentException("Starting position must not be null.");
@@ -65,7 +69,7 @@ public class TextParticle {
         this.age = lifespan > 0 ? lifespan : 1; // Ensure the lifespan is actually long enough.
         this.isSpawned = false;
 
-        this.text = text == null || text.length() == 0 ? "null text :D" : text;
+        this.parsedText = (text == null ? new RawTextBuilder("null text :D") : text).toString();
     }
 
 
@@ -123,10 +127,65 @@ public class TextParticle {
      */
     private boolean sendParticleToPlayer(Player player) {
         if(!visibleToPlayers.contains(player)) {
-
-            // Spawn it!
-
             visibleToPlayers.add(player);
+
+            CraftPlayer cPlayer = (CraftPlayer) player;
+            PacketPlayOutSpawnEntityLiving addPacket = new PacketPlayOutSpawnEntityLiving(); // An armour stand is apparently living??
+
+            try {
+
+                // -- ADD ENTITY --
+
+                NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "a", fakeEntityID); // Entity ID
+                NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "b", fakeEntityUUID); // Entity UUID
+                NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "c", NMS.NETID_ARMOUR_STAND); // Entity Type
+
+                // Set pos
+                NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "d", position.getX()); // Location X
+                NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "e", position.getY()); // Location Y (+ offset)
+                NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "f", position.getZ()); // Location Z
+
+                // Transform velocity the the network's format
+                int[] v = calculateNetworkVelocity(velocity);
+                NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "g", v[0]); // Velocity X
+                NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "h", v[1]); // Location Y
+                NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "i", v[2]); // Location Z
+
+                // Rotation is just 0
+                NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "j", (byte) 0); // Yaw
+                NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "k", (byte) 0); // Pitch
+                NMS.setClassField(PacketPlayOutSpawnEntityLiving.class, addPacket, "l", (byte) 0); // Head rotate.
+
+
+
+                // -- UPDATE ENTITY META --
+
+                DataWatcher dataWatcher = new DataWatcher(null);
+
+
+                dataWatcher.register(new DataWatcherObject<>(0, DataWatcherRegistry.a), (byte) 0x20); // Is invisible
+                dataWatcher.register(new DataWatcherObject<>(2, DataWatcherRegistry.f), Optional.ofNullable(IChatBaseComponent.ChatSerializer.b(parsedText)) ); // Custom name
+                dataWatcher.register(new DataWatcherObject<>(3, DataWatcherRegistry.i), true); // Custom name visible
+                dataWatcher.register(new DataWatcherObject<>(14, DataWatcherRegistry.a), (byte) 0x10); // Set Marker
+
+                PacketPlayOutEntityMetadata metaPacket = new PacketPlayOutEntityMetadata(fakeEntityID, dataWatcher, true);
+
+                cPlayer.getHandle().playerConnection.sendPacket(addPacket);
+                cPlayer.getHandle().playerConnection.sendPacket(metaPacket);
+
+            } catch (NoSuchFieldException err) {
+                OofTracker.getLog().severe("Error building packet. - No field! Is this the wrong version?");
+                err.printStackTrace();
+                visibleToPlayers.remove(player); // Remove player as it wasn't displayed.
+                return false;
+
+            } catch (IllegalAccessException err) {
+                OofTracker.getLog().severe("Error building packet - Can't access field! Is something misconfigured?");
+                err.printStackTrace();
+                visibleToPlayers.remove(player); // Remove player as it wasn't displayed.
+                return false;
+
+            }
             return true;
         }
         return false;
