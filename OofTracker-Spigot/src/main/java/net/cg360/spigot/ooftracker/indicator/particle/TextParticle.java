@@ -192,6 +192,20 @@ public class TextParticle {
     }
 
     /**
+     * Removes the client-side particle entity from the player.
+     * @return true if the particle was removed.
+     */
+    private boolean removeParticleForPlayer(Player player) {
+
+        if(visibleToPlayers.remove(player)) {
+            PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(fakeEntityID);
+            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(destroyPacket);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Checks if a player is within the visibility range of the particle.
      * @param player the player to check.
      * @return true if the player is within range.
